@@ -1,51 +1,54 @@
 package com.example.weatherapp.presentation.main_screen
 
-import androidx.compose.runtime.State
+import android.location.Location
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.common.Resource
-import com.example.weatherapp.common.mockWeather
-import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel
 @Inject constructor(
-    private val getWeatherUseCase: GetWeatherUseCase
+    getWeatherUseCase: GetWeatherUseCase,
+    private val locationTracker: LocationTracker
 ): ViewModel(){
 
-    private val _state = mutableStateOf(MainState())
-    val state: State<MainState> = _state
+    var currentLocation by mutableStateOf<Location?>(null)
 
+    private var latitude: Double = currentLocation?.latitude ?: 0.0
+    private var longitude: Double = currentLocation?.longitude ?: 0.0
 
-    fun getWeather(lat: Double, lon: Double) {
-        viewModelScope.launch{
-            getWeatherUseCase(lat, lon)
-                .collect {result ->
-                when(result) {
-                    is Resource.Success -> {
-                        _state.value = _state.value.copy(
-                            weather = result.data.toWeather(),
-                            isLoading = false
-                            )
-                    }
+    private var _state = getWeatherUseCase(latitude, longitude)
+        .onCompletion {
+            Timber.tag("Flow").d("Flow has completed.")
+        }
+        .onStart {
+            emit(Resource.Loading)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = Resource.Loading,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000)
+        )
+    val state: StateFlow<Resource> = _state
 
-                    is Resource.Error -> {
-                        _state.value = _state.value.copy(
-                            error = result.message,
-                            isLoading = false
-                        )
-                    }
-
-                    is Resource.Loading -> {
-                        _state.value = _state.value.copy(isLoading = true)
-                    }
-                }
-            }
+    fun getCurrentLocation() {
+        viewModelScope.launch(Dispatchers.IO) {
+            currentLocation = locationTracker.getCurrentLocation() // Location
+            Timber.e(currentLocation.toString())
         }
     }
 }
