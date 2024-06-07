@@ -83,6 +83,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    //timber
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
     // Local unit tests
     testImplementation("androidx.test:core:1.4.0")
     testImplementation("junit:junit:4.13.2")

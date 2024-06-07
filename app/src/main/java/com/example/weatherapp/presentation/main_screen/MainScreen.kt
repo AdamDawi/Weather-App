@@ -14,6 +14,6 @@ fun MainScreen(
     Column(
         modifier = modifier
     ) {
-        Text(text = viewModel.state.value)
+        Text(text = viewModel.state.value.weather.toString())
     }
 }
