@@ -21,8 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherapp.common.Resource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import java.text.SimpleDateFormat
-import java.util.Date
 
 @SuppressLint("SuspiciousIndentation", "SimpleDateFormat")
 @OptIn(ExperimentalPermissionsApi::class)
@@ -32,6 +30,7 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val currentDate = viewModel.currentDate
 
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -43,18 +42,14 @@ fun MainScreen(
         LaunchedEffect(true){
             locationPermissions.launchMultiplePermissionRequest()
         }
+
+
     
         Column(
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "lastUpdateTime: ${SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(Date())}",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(8.dp)
-            )
             when(state) {
                 is Resource.Loading ->{
                     CircularProgressIndicator(
@@ -66,6 +61,12 @@ fun MainScreen(
                 }
                 is Resource.Error -> Text(text = (state as Resource.Error).message)
                 is Resource.Success -> {
+                    Text(
+                        text = "lastUpdateTime: ${currentDate.value}",
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(8.dp)
+                    )
                     Text(text = "latitude: ${(state as Resource.Success).data.latitude}, longitude: ${(state as Resource.Success).data.longitude}")
                     Text(text = "${(state as Resource.Success).data.current}")
                 }

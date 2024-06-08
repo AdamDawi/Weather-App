@@ -3,8 +3,8 @@ package com.example.weatherapp.data.remote.dto
 import com.example.weatherapp.domain.model.Weather
 
 data class WeatherDto(
-    val current: Current?,
-    val current_units: CurrentUnits?,
+    val current: Current,
+    val current_units: CurrentUnits,
     val elevation: Int,
     val generationtime_ms: Double,
     val latitude: Double,

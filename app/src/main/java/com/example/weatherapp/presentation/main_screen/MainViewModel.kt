@@ -1,5 +1,8 @@
 package com.example.weatherapp.presentation.main_screen
 
+import android.annotation.SuppressLint
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.common.Resource
@@ -12,8 +15,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 
@@ -23,12 +29,16 @@ class MainViewModel
     private val getWeatherUseCase: GetWeatherUseCase,
     private val getUserLocationUseCase: GetUserLocationUseCase
 ): ViewModel(){
+    private val _currentDate = mutableStateOf("")
+    val currentDate: State<String> = _currentDate
 
     val state: StateFlow<Resource> = flow {
         while (true) {
             Timber.tag("Flow").d("Fetching current location and weather")
             try {
-                getUserLocationUseCase().collect { locationResource ->
+                getUserLocationUseCase().onEach {
+                    _currentDate.value = getCurrentDate()
+                }.collect { locationResource ->
                     when (locationResource) {
                         is ResourceLocation.Success -> {
                             val location = locationResource.data
@@ -61,6 +71,11 @@ class MainViewModel
         initialValue = Resource.Loading,
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000)
     )
+
+    @SuppressLint("SimpleDateFormat")
+    fun getCurrentDate(): String{
+        return SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(Date())
+    }
 }
 
 
