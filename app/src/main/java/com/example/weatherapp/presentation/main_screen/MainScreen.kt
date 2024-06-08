@@ -39,10 +39,9 @@ fun MainScreen(
             android.Manifest.permission.ACCESS_FINE_LOCATION
         )
     )
-        //1. when the app get launched for the first time
+        //when the app get launched for the first time
         LaunchedEffect(true){
             locationPermissions.launchMultiplePermissionRequest()
-            viewModel.getCurrentLocation()
         }
     
         Column(
@@ -56,11 +55,6 @@ fun MainScreen(
                 modifier = Modifier
                     .padding(8.dp)
             )
-            Text(
-                text = "latitude: ${viewModel.currentLocation?.latitude} " +
-                    "longitude: ${viewModel.currentLocation?.longitude}",
-                modifier = Modifier.padding(8.dp)
-            )
             when(state) {
                 is Resource.Loading ->{
                     CircularProgressIndicator(
@@ -71,7 +65,10 @@ fun MainScreen(
                     )
                 }
                 is Resource.Error -> Text(text = (state as Resource.Error).message)
-                is Resource.Success -> Text(text = (state as Resource.Success).data.generationtime_ms.toString())
+                is Resource.Success -> {
+                    Text(text = "latitude: ${(state as Resource.Success).data.latitude}, longitude: ${(state as Resource.Success).data.longitude}")
+                    Text(text = "${(state as Resource.Success).data.current}")
+                }
             }
         }
 }

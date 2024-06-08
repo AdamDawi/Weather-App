@@ -1,4 +1,4 @@
-package com.example.weatherapp.presentation.main_screen
+package com.example.weatherapp.data.location
 
 import android.content.Context
 import android.content.pm.PackageManager

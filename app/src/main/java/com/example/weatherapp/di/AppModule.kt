@@ -6,8 +6,9 @@ import com.example.weatherapp.data.remote.WeatherApi
 import com.example.weatherapp.data.repository.WeatherRepositoryImpl
 import com.example.weatherapp.domain.repository.WeatherRepository
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
-import com.example.weatherapp.presentation.main_screen.DefaultLocationTracker
-import com.example.weatherapp.presentation.main_screen.LocationTracker
+import com.example.weatherapp.data.location.DefaultLocationTracker
+import com.example.weatherapp.data.location.LocationTracker
+import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -66,4 +67,12 @@ object AppModule {
         fusedLocationProviderClient = fusedLocationProviderClient,
         application = context
     )
+
+    @Provides
+    @Singleton
+    fun providesGetUserLocationUseCase(
+        repository: LocationTracker
+    ): GetUserLocationUseCase{
+        return GetUserLocationUseCase(repository)
+    }
 }
