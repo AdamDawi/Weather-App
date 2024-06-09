@@ -6,5 +6,6 @@ data class Current(
     val rain: Double,
     val temperature_2m: Double,
     val time: String,
-    val wind_speed_10m: Double
+    val wind_speed_10m: Double,
+    val cloud_cover: Double
 )

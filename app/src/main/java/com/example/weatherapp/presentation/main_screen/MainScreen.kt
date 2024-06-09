@@ -1,10 +1,10 @@
 package com.example.weatherapp.presentation.main_screen
 
 import android.annotation.SuppressLint
+import android.location.Geocoder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -14,11 +14,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherapp.common.Resource
+import com.example.weatherapp.presentation.main_screen.components.WeatherContent
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
@@ -59,14 +60,16 @@ fun MainScreen(
                 }
                 is Resource.Error ->  { Text(text = state.message!!) }
                 is Resource.Success -> {
-                    Text(
-                        text = "lastUpdateTime: $currentDate",
-                        fontSize = 16.sp,
-                        modifier = Modifier
-                            .padding(8.dp)
+                    WeatherContent(
+                        currentDate = currentDate,
+                        weatherData = state.data!!,
+                        location = Geocoder(LocalContext.current)
+                            .getFromLocation(
+                                state.data!!.latitude,
+                                state.data!!.longitude,
+                                1
+                            )?.get(0)?.locality ?: ""
                     )
-                    Text(text = "latitude: ${state.data?.latitude}, longitude: ${state.data?.longitude}")
-                    Text(text = "${state.data?.current}")
                 }
             }
         }

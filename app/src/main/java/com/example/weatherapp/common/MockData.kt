@@ -11,7 +11,8 @@ val mockCurrent = Current(
     temperature_2m = 19.1,
     is_day = 1,
     rain = 0.0,
-    wind_speed_10m = 2.3
+    wind_speed_10m = 2.3,
+    cloud_cover = 77.0
 )
 val mockCurrentUnits = CurrentUnits(
     temperature_2m = "°C",
@@ -20,6 +21,7 @@ val mockCurrentUnits = CurrentUnits(
     time = "iso8601",
     interval = "seconds",
     is_day = "",
+    cloud_cover = "%"
 )
 val mockWeather = WeatherDto(
     latitude = 52.0,
@@ -33,5 +35,6 @@ val mockWeather = WeatherDto(
     current_units = mockCurrentUnits
 )
 
+const val mockCurrentDate: String = "17:50:33 09/06/2024"
 val mockLocation = Location("mockProvider")
 
