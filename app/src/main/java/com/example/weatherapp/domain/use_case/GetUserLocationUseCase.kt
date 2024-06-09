@@ -1,23 +1,26 @@
 package com.example.weatherapp.domain.use_case
 
-import com.example.weatherapp.common.ResourceLocation
+import android.location.Location
+import com.example.weatherapp.common.Resource
 import com.example.weatherapp.data.location.LocationTracker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
 import javax.inject.Inject
 
 class GetUserLocationUseCase@Inject constructor(
     private val repository: LocationTracker
 ) {
-
-    operator fun invoke(): Flow<ResourceLocation> = flow{
-        Timber.tag("Flow").d("Fetching current location")
+    operator fun invoke(): Flow<Resource<Location>> = flow{
+        Timber.d("Fetching current location")
         try {
             val result = repository.getCurrentLocation()
-            emit(ResourceLocation.Success(result))
+            emit(Resource.Success(result))
         }catch (e: Exception){
-            emit(ResourceLocation.Error(e.localizedMessage ?: "An unexpected error"))
+            emit(Resource.Error(e.localizedMessage ?: "An unexpected error when fetching location"))
         }
+    }.onCompletion {
+        Timber.d("Location fetch completed")
     }
 }

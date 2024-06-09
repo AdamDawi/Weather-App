@@ -1,5 +1,6 @@
 package com.example.weatherapp.common
 
+import android.location.Location
 import com.example.weatherapp.data.remote.dto.Current
 import com.example.weatherapp.data.remote.dto.CurrentUnits
 import com.example.weatherapp.data.remote.dto.WeatherDto
@@ -9,7 +10,7 @@ val mockCurrent = Current(
     time = "2024-06-08T19:15",
     temperature_2m = 19.1,
     is_day = 1,
-    rain = 0,
+    rain = 0.0,
     wind_speed_10m = 2.3
 )
 val mockCurrentUnits = CurrentUnits(
@@ -31,4 +32,6 @@ val mockWeather = WeatherDto(
     current = mockCurrent,
     current_units = mockCurrentUnits
 )
+
+val mockLocation = Location("mockProvider")
 

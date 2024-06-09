@@ -1,12 +1,14 @@
 package com.example.weatherapp.presentation.main_screen
 
 import android.annotation.SuppressLint
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.example.weatherapp.common.Resource
-import com.example.weatherapp.common.ResourceLocation
+import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,20 +29,27 @@ import javax.inject.Inject
 class MainViewModel
 @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
-    private val getUserLocationUseCase: GetUserLocationUseCase
+    private val getUserLocationUseCase: GetUserLocationUseCase,
+    savedStateHandle: SavedStateHandle
 ): ViewModel(){
-    private val _currentDate = mutableStateOf("")
-    val currentDate: State<String> = _currentDate
 
-    val state: StateFlow<Resource> = flow {
+    @OptIn(SavedStateHandleSaveableApi::class)
+    var currentDate by savedStateHandle.saveable{
+        mutableStateOf("")
+    }
+        private set
+
+    val state: StateFlow<Resource<Weather>> = flow<Resource<Weather>> {
         while (true) {
-            Timber.tag("Flow").d("Fetching current location and weather")
+            Timber.d("Fetching current location and weather")
             try {
-                getUserLocationUseCase().onEach {
-                    _currentDate.value = getCurrentDate()
+                getUserLocationUseCase()
+                .onEach {
+                    currentDate = getCurrentDateWithFormat()
+                    savedStateHandle[SAVED_STATE_DATE] = currentDate
                 }.collect { locationResource ->
                     when (locationResource) {
-                        is ResourceLocation.Success -> {
+                        is Resource.Success -> {
                             val location = locationResource.data
                             getWeatherUseCase(
                                 location?.longitude ?: 0.0,
@@ -50,30 +59,34 @@ class MainViewModel
                             }
                         }
 
-                        is ResourceLocation.Error -> {
-                            emit(Resource.Error(locationResource.message))
+                        is Resource.Error -> {
+                            emit(Resource.Error(locationResource.message ?: "Error occurred"))
                         }
 
-                        ResourceLocation.Loading -> {
-                            emit(Resource.Loading)
+                        is Resource.Loading -> {
+                            emit(Resource.Loading())
                         }
                     }
                 }
             } catch (e: Exception) {
-                emit(Resource.Error(e.localizedMessage ?: "An unexpected error"))
+                emit(Resource.Error(e.localizedMessage ?: "An unexpected error when fetching weather"))
             }
             delay(5000)
         }
     }.onCompletion {
-        Timber.tag("Flow").d("Weather and Location flow completed")
+        Timber.d("Weather and Location flow completed")
     }.stateIn(
         scope = viewModelScope,
-        initialValue = Resource.Loading,
+        initialValue = Resource.Loading(),
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000)
     )
 
+    companion object {
+        private const val SAVED_STATE_DATE = "SAVED_STATE_DATE"
+    }
+
     @SuppressLint("SimpleDateFormat")
-    fun getCurrentDate(): String{
+    fun getCurrentDateWithFormat(): String{
         return SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(Date())
     }
 }

@@ -1,11 +1,15 @@
 package com.example.weatherapp.presentation.main_screen
 
+import androidx.lifecycle.SavedStateHandle
 import com.example.weatherapp.common.Resource
 import com.example.weatherapp.common.mockWeather
+import com.example.weatherapp.data.location.FakeLocationTracker
 import com.example.weatherapp.data.remote.api.FakeHttpErrorApi
 import com.example.weatherapp.data.remote.api.FakeIOErrorApi
 import com.example.weatherapp.data.remote.api.FakeSuccessApi
 import com.example.weatherapp.data.repository.FakeWeatherRepository
+import com.example.weatherapp.domain.model.Weather
+import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import com.example.weatherapp.utils.ReplaceMainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +25,7 @@ import org.junit.Test
 
 class MainViewModelTest {
 
-    private val receivedUiStates = mutableListOf<Resource>()
+    private val receivedUiStates = mutableListOf<Resource<Weather>>()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get: Rule
@@ -31,7 +35,11 @@ class MainViewModelTest {
     @Test
     fun `should return data when network request is successful`() = runTest {
         assertTrue(receivedUiStates.isEmpty())
-        val viewModel = MainViewModel(GetWeatherUseCase(FakeWeatherRepository(FakeSuccessApi())))
+        val viewModel = MainViewModel(
+            GetWeatherUseCase(FakeWeatherRepository(FakeSuccessApi())),
+            GetUserLocationUseCase(FakeLocationTracker()),
+            SavedStateHandle()
+        )
 
         viewModel.state.onEach {
             receivedUiStates.add(it)
@@ -41,7 +49,7 @@ class MainViewModelTest {
         advanceUntilIdle()
         assertEquals(
             listOf(
-                Resource.Loading,
+                Resource.Loading(),
                 Resource.Success(mockWeather)
             ),
             receivedUiStates
@@ -52,7 +60,11 @@ class MainViewModelTest {
     @Test
     fun `should return Http Error when network request fails`() = runTest {
         assertTrue(receivedUiStates.isEmpty())
-        val viewModel = MainViewModel(GetWeatherUseCase(FakeWeatherRepository(FakeHttpErrorApi())))
+        val viewModel = MainViewModel(
+            GetWeatherUseCase(FakeWeatherRepository(FakeHttpErrorApi())),
+            GetUserLocationUseCase(FakeLocationTracker()),
+            SavedStateHandle()
+        )
         viewModel.state.onEach {
             receivedUiStates.add(it)
         }.take(2)
@@ -60,8 +72,8 @@ class MainViewModelTest {
 
         advanceUntilIdle()
         assertEquals(
-            listOf(
-                Resource.Loading,
+            listOf<Resource<Weather>>(
+                Resource.Loading(),
                 Resource.Error("HTTP 500 Response.error()")
             ),
             receivedUiStates
@@ -72,7 +84,11 @@ class MainViewModelTest {
     @Test
     fun `should return IO Error when network request fails`() = runTest {
         assertTrue(receivedUiStates.isEmpty())
-        val viewModel = MainViewModel(GetWeatherUseCase(FakeWeatherRepository(FakeIOErrorApi())))
+        val viewModel = MainViewModel(
+            GetWeatherUseCase(FakeWeatherRepository(FakeIOErrorApi())),
+            GetUserLocationUseCase(FakeLocationTracker()),
+            SavedStateHandle()
+        )
 
         viewModel.state.onEach {
             receivedUiStates.add(it)
@@ -81,8 +97,8 @@ class MainViewModelTest {
 
         advanceUntilIdle()
         assertEquals(
-            listOf(
-                Resource.Loading,
+            listOf<Resource<Weather>>(
+                Resource.Loading(),
                 Resource.Error("Couldn't reach server. Check your internet connection.")
             ),
             receivedUiStates

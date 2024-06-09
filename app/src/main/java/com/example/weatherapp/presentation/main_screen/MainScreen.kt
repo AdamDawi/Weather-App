@@ -39,12 +39,10 @@ fun MainScreen(
         )
     )
         //when the app get launched for the first time
-        LaunchedEffect(true){
+        LaunchedEffect(Unit){
             locationPermissions.launchMultiplePermissionRequest()
         }
 
-
-    
         Column(
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -59,16 +57,16 @@ fun MainScreen(
                         color = Color.Black
                     )
                 }
-                is Resource.Error -> Text(text = (state as Resource.Error).message)
+                is Resource.Error ->  { Text(text = state.message!!) }
                 is Resource.Success -> {
                     Text(
-                        text = "lastUpdateTime: ${currentDate.value}",
+                        text = "lastUpdateTime: $currentDate",
                         fontSize = 16.sp,
                         modifier = Modifier
                             .padding(8.dp)
                     )
-                    Text(text = "latitude: ${(state as Resource.Success).data.latitude}, longitude: ${(state as Resource.Success).data.longitude}")
-                    Text(text = "${(state as Resource.Success).data.current}")
+                    Text(text = "latitude: ${state.data?.latitude}, longitude: ${state.data?.longitude}")
+                    Text(text = "${state.data?.current}")
                 }
             }
         }
