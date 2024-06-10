@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +24,9 @@ import com.example.weatherapp.common.Resource
 import com.example.weatherapp.presentation.main_screen.components.WeatherContent
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 @SuppressLint("SuspiciousIndentation", "SimpleDateFormat")
 @OptIn(ExperimentalPermissionsApi::class)
@@ -32,6 +37,9 @@ fun MainScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val currentDate = viewModel.currentDate
+    val context = LocalContext.current
+    val geocoder = remember { Geocoder(context, Locale.getDefault()) }
+    val address = remember { mutableStateOf("") }
 
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -43,6 +51,26 @@ fun MainScreen(
         LaunchedEffect(Unit){
             locationPermissions.launchMultiplePermissionRequest()
         }
+
+    LaunchedEffect(state) {
+        if (state is Resource.Success) {
+            val latitude = state.data!!.latitude
+            val longitude = state.data!!.longitude
+            withContext(Dispatchers.IO) {
+                try {
+                    val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                    if (addresses?.isNotEmpty() == true) {
+                        val addressLine = addresses[0].let { "${it.countryName}, ${it.locality ?: ""}" }
+                        address.value = addressLine
+                    } else {
+                        address.value = "Address not found"
+                    }
+                } catch (e: Exception) {
+                    address.value = "Geocoding failed: ${e.message}"
+                }
+            }
+        }
+    }
 
         Column(
             modifier = modifier.fillMaxSize(),
@@ -63,12 +91,7 @@ fun MainScreen(
                     WeatherContent(
                         currentDate = currentDate,
                         weatherData = state.data!!,
-                        location = Geocoder(LocalContext.current)
-                            .getFromLocation(
-                                state.data!!.latitude,
-                                state.data!!.longitude,
-                                1
-                            )?.get(0)?.locality ?: ""
+                        location =  address.value
                     )
                 }
             }

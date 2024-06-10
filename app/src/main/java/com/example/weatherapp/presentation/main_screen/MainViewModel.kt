@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,6 +56,9 @@ class MainViewModel
                                 location?.longitude ?: 0.0,
                                 location?.latitude ?: 0.0
                             ).collect { weatherResource ->
+                                viewModelScope.launch {
+
+                                }
                                 emit(weatherResource)
                             }
                         }
