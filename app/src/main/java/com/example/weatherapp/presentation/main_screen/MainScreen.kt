@@ -36,7 +36,6 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val currentDate = viewModel.currentDate
     val context = LocalContext.current
     val geocoder = remember { Geocoder(context, Locale.getDefault()) }
     val address = remember { mutableStateOf("") }
@@ -47,10 +46,11 @@ fun MainScreen(
             android.Manifest.permission.ACCESS_FINE_LOCATION
         )
     )
-        //when the app get launched for the first time
-        LaunchedEffect(Unit){
-            locationPermissions.launchMultiplePermissionRequest()
-        }
+
+    //when the app get launched for the first time
+    LaunchedEffect(Unit){
+        locationPermissions.launchMultiplePermissionRequest()
+    }
 
     LaunchedEffect(state) {
         if (state is Resource.Success) {
@@ -89,7 +89,7 @@ fun MainScreen(
                 is Resource.Error ->  { Text(text = state.message!!) }
                 is Resource.Success -> {
                     WeatherContent(
-                        currentDate = currentDate,
+                        currentDate = viewModel.currentDate,
                         weatherData = state.data!!,
                         location =  address.value
                     )

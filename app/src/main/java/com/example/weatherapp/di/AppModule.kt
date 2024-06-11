@@ -8,6 +8,8 @@ import com.example.weatherapp.domain.repository.WeatherRepository
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import com.example.weatherapp.data.location.DefaultLocationTracker
 import com.example.weatherapp.data.location.LocationTracker
+import com.example.weatherapp.data.repository.LocationRepositoryImpl
+import com.example.weatherapp.domain.repository.LocationRepository
 import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -47,6 +49,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideLocationRepository(locationTracker: LocationTracker): LocationRepository{
+        return LocationRepositoryImpl(locationTracker)
+    }
+
+    @Provides
+    @Singleton
     fun provideGetWeatherUseCase(repository: WeatherRepository): GetWeatherUseCase{
         return GetWeatherUseCase(repository)
     }
@@ -71,7 +79,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providesGetUserLocationUseCase(
-        repository: LocationTracker
+        repository: LocationRepository
     ): GetUserLocationUseCase{
         return GetUserLocationUseCase(repository)
     }
