@@ -63,6 +63,10 @@ fun WeatherContent(
             text = "latitude: ${weatherData.latitude}, longitude: ${weatherData.longitude}",
             color = Color.Black
         )
+        WeatherIconBasedOnCode(
+            weatherCode = weatherData.current.weather_code,
+            isDay = weatherData.current.is_day==1
+        )
         Text(
             modifier = Modifier
                 .padding(16.dp),
