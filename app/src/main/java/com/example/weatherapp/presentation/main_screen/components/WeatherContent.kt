@@ -1,12 +1,15 @@
 package com.example.weatherapp.presentation.main_screen.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,19 +29,23 @@ fun WeatherContent(
     modifier: Modifier = Modifier,
     currentDate: String,
     weatherData: Weather,
-    location: String
+    location: String,
+    onThemeUpdate: () -> Unit,
+    darkTheme: Boolean
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .background(Color.White),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            ThemeSwitcher(darkTheme = darkTheme) {
+                onThemeUpdate()
+            }
             Text(
                 text = "Last update time: $currentDate",
                 fontSize = 12.sp,
@@ -55,46 +62,59 @@ fun WeatherContent(
         ) {
             Text(
                 text = location,
-                fontSize = 22.sp,
-                color = Color.Black
+                fontSize = 24.sp
             )
         }
-        Text(
-            text = "latitude: ${weatherData.latitude}, longitude: ${weatherData.longitude}",
-            color = Color.Black
-        )
-        WeatherIconBasedOnCode(
-            weatherCode = weatherData.current.weather_code,
-            isDay = weatherData.current.is_day==1
-        )
-        Text(
-            modifier = Modifier
-                .padding(16.dp),
-            text = "${weatherData.current.temperature_2m} ${weatherData.current_units.temperature_2m}",
-            fontSize = 72.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color.Black
-        )
-        Text(
-            text = "Rain: ${weatherData.current.rain}",
-            fontSize = 20.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Wind speed: ${weatherData.current.wind_speed_10m} ${weatherData.current_units.wind_speed_10m}",
-            fontSize = 20.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Is day: ${weatherData.current.is_day}",
-            fontSize = 20.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Cloud cover: ${weatherData.current.cloud_cover} ${weatherData.current_units.cloud_cover}",
-            fontSize = 20.sp,
-            color = Color.Black
-        )
+        Box(modifier = Modifier,
+            contentAlignment = Alignment.TopCenter
+        ){
+            WeatherIconBasedOnCode(
+                weatherCode = weatherData.current.weather_code,
+                isDay = weatherData.current.is_day==1
+            )
+            Text(
+                modifier = Modifier
+                    .padding(top = 130.dp),
+                text = "${weatherData.current.temperature_2m} ${weatherData.current_units.temperature_2m}",
+                fontSize = 72.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                CardForDetail(
+                    title = "Rain",
+                    value = weatherData.current.rain.toString(),
+                    unit = weatherData.current_units.rain
+                )
+            }
+            item {
+                CardForDetail(
+                    title = "Wind speed",
+                    value = weatherData.current.wind_speed_10m.toString(),
+                    unit = weatherData.current_units.wind_speed_10m
+                )
+            }
+            item {
+                CardForDetail(
+                    title = "Humidity",
+                    value = weatherData.current.relative_humidity_2m.toString(),
+                    unit = weatherData.current_units.relative_humidity_2m
+                )
+            }
+            item {
+                CardForDetail(
+                    title = "Cloud cover",
+                    value = weatherData.current.cloud_cover.toString(),
+                    unit = weatherData.current_units.cloud_cover
+                )
+            }
+        }
     }
 }
 
@@ -105,6 +125,47 @@ private fun WeatherContentPreview() {
     WeatherContent(
         currentDate = mockCurrentDate,
         weatherData = mockWeather.toWeather(),
-        location = "Lublin"
+        location = "Polska, Lublin",
+        onThemeUpdate = {},
+        darkTheme = false
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherContentThunderstormPreview() {
+    WeatherContent(
+        currentDate = mockCurrentDate,
+        weatherData = mockWeather.toWeather()
+            .copy(current = mockWeather.toWeather().current.copy(weather_code = 95)),
+        location = "Polska, Lublin",
+        onThemeUpdate = {},
+        darkTheme = true
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherContentRainAndSnowPreview() {
+    WeatherContent(
+        currentDate = mockCurrentDate,
+        weatherData = mockWeather.toWeather()
+            .copy(current = mockWeather.toWeather().current.copy(weather_code = 66)),
+        location = "Polska, Lublin",
+        onThemeUpdate = {},
+        darkTheme = false
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherContentFrostPreview() {
+    WeatherContent(
+        currentDate = mockCurrentDate,
+        weatherData = mockWeather.toWeather()
+            .copy(current = mockWeather.toWeather().current.copy(weather_code = 51)),
+        location = "Polska, Lublin",
+        onThemeUpdate = {},
+        darkTheme = false
     )
 }

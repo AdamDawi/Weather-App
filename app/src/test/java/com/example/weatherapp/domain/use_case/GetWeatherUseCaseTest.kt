@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
-import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 

@@ -8,5 +8,6 @@ data class CurrentUnits(
     val time: String,
     val wind_speed_10m: String,
     val cloud_cover: String,
-    val weather_code: String
+    val weather_code: String,
+    val relative_humidity_2m: String
 )

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -16,7 +17,8 @@ fun WeatherIconBasedOnCode(
     isDay: Boolean
 ) {
     Icon(
-        modifier = modifier.size(200.dp),
+        modifier = modifier
+            .size(150.dp),
         painter = painterResource(id =
         when (weatherCode) {
             0 -> if(isDay) R.drawable.clear_sky else R.drawable.clear_night

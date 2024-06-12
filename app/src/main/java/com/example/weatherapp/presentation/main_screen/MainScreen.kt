@@ -5,6 +5,7 @@ import android.location.Geocoder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -33,7 +34,9 @@ import java.util.Locale
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    onThemeUpdate: () -> Unit,
+    darkTheme: Boolean
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -73,7 +76,9 @@ fun MainScreen(
     }
 
         Column(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -91,7 +96,9 @@ fun MainScreen(
                     WeatherContent(
                         currentDate = viewModel.currentDate,
                         weatherData = state.data!!,
-                        location =  address.value
+                        location =  address.value,
+                        onThemeUpdate = {onThemeUpdate()},
+                        darkTheme = darkTheme
                     )
                 }
             }

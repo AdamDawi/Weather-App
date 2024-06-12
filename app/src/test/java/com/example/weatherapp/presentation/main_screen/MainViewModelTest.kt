@@ -7,7 +7,6 @@ import com.example.weatherapp.data.location.FakeLocationTracker
 import com.example.weatherapp.data.remote.api.FakeHttpErrorApi
 import com.example.weatherapp.data.remote.api.FakeIOErrorApi
 import com.example.weatherapp.data.remote.api.FakeSuccessApi
-import com.example.weatherapp.data.remote.dto.WeatherDto
 import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.data.repository.FakeLocationRepository
 import com.example.weatherapp.data.repository.FakeWeatherRepository
@@ -16,14 +15,12 @@ import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import com.example.weatherapp.utils.ReplaceMainDispatcherRule
 import com.example.weatherapp.utils.compareResourceLists
-import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test

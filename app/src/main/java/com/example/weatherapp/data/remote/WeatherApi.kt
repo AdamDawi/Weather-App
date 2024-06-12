@@ -9,7 +9,7 @@ interface WeatherApi{
     suspend fun getWeather(
         @Query("latitude") latitude: String,
         @Query("longitude") longitude: String,
-        @Query("current") current: String = "temperature_2m,is_day,rain,cloud_cover,wind_speed_10m,weather_code",
+        @Query("current") current: String = "temperature_2m,is_day,rain,cloud_cover,wind_speed_10m,weather_code,relative_humidity_2m",
         @Query("timezone") timezone: String = "auto"
     ): WeatherDto
 }

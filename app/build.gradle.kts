@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -93,8 +94,6 @@ dependencies {
     //permissions
     implementation("com.google.accompanist:accompanist-permissions:0.24.13-rc")
 
-    //svg animations
-    implementation("com.caverock:androidsvg:1.4")
 
     // Local unit tests
     testImplementation("androidx.test:core:1.4.0")
