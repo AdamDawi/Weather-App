@@ -18,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.R
 import com.example.weatherapp.common.mockCurrentDate
 import com.example.weatherapp.common.mockWeather
 import com.example.weatherapp.data.remote.dto.toWeather
@@ -89,36 +91,44 @@ fun WeatherContent(
         }
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(32.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
                 CardForDetail(
                     title = "Rain",
                     value = weatherData.current.rain.toString(),
-                    unit = weatherData.current_units.rain
+                    unit = weatherData.current_units.rain,
+                    icon = painterResource(id = R.drawable.ic_rain)
                 )
             }
             item {
                 CardForDetail(
                     title = "Wind speed",
                     value = weatherData.current.wind_speed_10m.toString(),
-                    unit = weatherData.current_units.wind_speed_10m
+                    unit = weatherData.current_units.wind_speed_10m,
+                    icon = painterResource(id = R.drawable.ic_wind)
                 )
             }
             item {
                 CardForDetail(
                     title = "Humidity",
                     value = weatherData.current.relative_humidity_2m.toString(),
-                    unit = weatherData.current_units.relative_humidity_2m
+                    unit = weatherData.current_units.relative_humidity_2m,
+                    icon = painterResource(id =
+                        if(weatherData.current.relative_humidity_2m < 20.0) R.drawable.ic_humidity_low
+                        else if(weatherData.current.relative_humidity_2m < 80.0) R.drawable.ic_humidity_medium
+                        else R.drawable.ic_humidity_high
+                    )
                 )
             }
             item {
                 CardForDetail(
                     title = "Cloud cover",
                     value = weatherData.current.cloud_cover.toString(),
-                    unit = weatherData.current_units.cloud_cover
+                    unit = weatherData.current_units.cloud_cover,
+                    icon = painterResource(id = R.drawable.ic_cloud)
                 )
             }
         }

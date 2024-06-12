@@ -74,7 +74,6 @@ fun MainScreen(
             }
         }
     }
-
         Column(
             modifier = modifier
                 .fillMaxSize()
