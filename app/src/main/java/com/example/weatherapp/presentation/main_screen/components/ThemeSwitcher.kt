@@ -33,7 +33,7 @@ import com.example.weatherapp.R
 fun ThemeSwitcher(
     modifier: Modifier = Modifier,
     darkTheme: Boolean,
-    size: Dp = 40.dp,
+    size: Dp = 35.dp,
     iconSize: Dp = size/3,
     padding: Dp = 4.dp,
     borderWidth: Dp = 1.dp,
@@ -82,9 +82,9 @@ fun ThemeSwitcher(
                 Icon(
                     modifier = Modifier.size(iconSize),
                     painter = painterResource(id = R.drawable.night_mode),
-                    contentDescription = null,
-                    tint = if(darkTheme) MaterialTheme.colorScheme.secondary
-                    else MaterialTheme.colorScheme.primary
+                    contentDescription = "Night mode icon",
+                    tint = if(darkTheme) MaterialTheme.colorScheme.onSecondaryContainer
+                    else MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
             Box(
@@ -94,9 +94,9 @@ fun ThemeSwitcher(
                 Icon(
                     modifier = Modifier.size(iconSize),
                     painter = painterResource(id = R.drawable.light_mode),
-                    contentDescription = null,
-                    tint = if(darkTheme) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.secondary
+                    contentDescription = "Light mode icon",
+                    tint = if(darkTheme) MaterialTheme.colorScheme.onPrimaryContainer
+                    else MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
         }

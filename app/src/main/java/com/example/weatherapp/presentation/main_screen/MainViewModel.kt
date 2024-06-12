@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -88,7 +87,7 @@ class MainViewModel
 
     @SuppressLint("SimpleDateFormat")
     fun getCurrentDateWithFormat(): String{
-        return SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(Date())
+        return SimpleDateFormat("HH:mm:ss").format(Date())
     }
 }
 

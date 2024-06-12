@@ -1,5 +1,7 @@
 package com.example.weatherapp.presentation.main_screen.components
 
+import android.content.res.Configuration
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +26,8 @@ import com.example.weatherapp.common.mockCurrentDate
 import com.example.weatherapp.common.mockWeather
 import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.model.Weather
+import com.example.weatherapp.presentation.ui.theme.DarkerWhite
+import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 
 @Composable
 fun WeatherContent(
@@ -40,8 +45,10 @@ fun WeatherContent(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             ThemeSwitcher(darkTheme = darkTheme) {
                 onThemeUpdate()
@@ -51,7 +58,7 @@ fun WeatherContent(
                 fontSize = 12.sp,
                 modifier = Modifier
                     .padding(8.dp),
-                color = Color.Gray
+                color = if (darkTheme) DarkerWhite else Color.Gray
             )
         }
         Row(
@@ -119,32 +126,42 @@ fun WeatherContent(
 }
 
 
-@Preview
+@Preview(name = "Light Mode", showBackground = true)
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-private fun WeatherContentPreview() {
-    WeatherContent(
-        currentDate = mockCurrentDate,
-        weatherData = mockWeather.toWeather(),
-        location = "Polska, Lublin",
-        onThemeUpdate = {},
-        darkTheme = false
-    )
+private fun WeatherContentDefaultPreview() {
+    WeatherAppTheme {
+        Surface {
+            WeatherContent(
+                currentDate = mockCurrentDate,
+                weatherData = mockWeather.toWeather(),
+                location = "Polska, Lublin",
+                onThemeUpdate = {},
+                darkTheme = isSystemInDarkTheme()
+            )
+        }
+    }
 }
 
-@Preview
+@Preview(name = "Light Mode", showBackground = true)
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun WeatherContentThunderstormPreview() {
-    WeatherContent(
-        currentDate = mockCurrentDate,
-        weatherData = mockWeather.toWeather()
-            .copy(current = mockWeather.toWeather().current.copy(weather_code = 95)),
-        location = "Polska, Lublin",
-        onThemeUpdate = {},
-        darkTheme = true
-    )
+    WeatherAppTheme {
+        Surface {
+            WeatherContent(
+                currentDate = mockCurrentDate,
+                weatherData = mockWeather.toWeather()
+                    .copy(current = mockWeather.toWeather().current.copy(weather_code = 95)),
+                location = "Polska, Lublin",
+                onThemeUpdate = {},
+                darkTheme = isSystemInDarkTheme()
+            )
+        }
+    }
 }
 
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun WeatherContentRainAndSnowPreview() {
     WeatherContent(
@@ -153,11 +170,11 @@ private fun WeatherContentRainAndSnowPreview() {
             .copy(current = mockWeather.toWeather().current.copy(weather_code = 66)),
         location = "Polska, Lublin",
         onThemeUpdate = {},
-        darkTheme = false
+        darkTheme = isSystemInDarkTheme()
     )
 }
 
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun WeatherContentFrostPreview() {
     WeatherContent(
@@ -166,6 +183,6 @@ private fun WeatherContentFrostPreview() {
             .copy(current = mockWeather.toWeather().current.copy(weather_code = 51)),
         location = "Polska, Lublin",
         onThemeUpdate = {},
-        darkTheme = false
+        darkTheme = isSystemInDarkTheme()
     )
 }
