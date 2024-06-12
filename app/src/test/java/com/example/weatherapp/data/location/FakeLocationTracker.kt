@@ -1,13 +1,14 @@
 package com.example.weatherapp.data.location
 
 import android.location.Location
-import com.example.weatherapp.common.mockLocation
+import org.mockito.Mockito
 
 class FakeLocationTracker: LocationTracker {
     override suspend fun getCurrentLocation(): Location {
-        return mockLocation.apply {
-            latitude = 52.0
-            longitude = 23.372
-        }
+        val mockLocation = Mockito.mock(Location::class.java)
+
+        Mockito.`when`(mockLocation.latitude).thenReturn(52.2296756)
+        Mockito.`when`(mockLocation.longitude).thenReturn(21.0122287)
+        return mockLocation
     }
 }

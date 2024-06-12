@@ -56,9 +56,6 @@ class MainViewModel
                                 location?.longitude ?: 0.0,
                                 location?.latitude ?: 0.0
                             ).collect { weatherResource ->
-                                viewModelScope.launch {
-
-                                }
                                 emit(weatherResource)
                             }
                         }

@@ -7,11 +7,16 @@ import com.example.weatherapp.data.location.FakeLocationTracker
 import com.example.weatherapp.data.remote.api.FakeHttpErrorApi
 import com.example.weatherapp.data.remote.api.FakeIOErrorApi
 import com.example.weatherapp.data.remote.api.FakeSuccessApi
+import com.example.weatherapp.data.remote.dto.WeatherDto
+import com.example.weatherapp.data.remote.dto.toWeather
+import com.example.weatherapp.data.repository.FakeLocationRepository
 import com.example.weatherapp.data.repository.FakeWeatherRepository
 import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import com.example.weatherapp.utils.ReplaceMainDispatcherRule
+import com.example.weatherapp.utils.compareResourceLists
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -37,7 +42,7 @@ class MainViewModelTest {
         assertTrue(receivedUiStates.isEmpty())
         val viewModel = MainViewModel(
             GetWeatherUseCase(FakeWeatherRepository(FakeSuccessApi())),
-            GetUserLocationUseCase(FakeLocationTracker()),
+            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTracker())),
             SavedStateHandle()
         )
 
@@ -47,12 +52,13 @@ class MainViewModelTest {
             .launchIn(this)
 
         advanceUntilIdle()
-        assertEquals(
+
+        assert(compareResourceLists(
             listOf(
                 Resource.Loading(),
-                Resource.Success(mockWeather)
-            ),
-            receivedUiStates
+                Resource.Success(mockWeather.toWeather())
+        ),
+            receivedUiStates)
         )
     }
 
@@ -62,7 +68,7 @@ class MainViewModelTest {
         assertTrue(receivedUiStates.isEmpty())
         val viewModel = MainViewModel(
             GetWeatherUseCase(FakeWeatherRepository(FakeHttpErrorApi())),
-            GetUserLocationUseCase(FakeLocationTracker()),
+            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTracker())),
             SavedStateHandle()
         )
         viewModel.state.onEach {
@@ -71,12 +77,13 @@ class MainViewModelTest {
             .launchIn(this)
 
         advanceUntilIdle()
-        assertEquals(
-            listOf<Resource<Weather>>(
+
+        assert(compareResourceLists(
+            listOf(
                 Resource.Loading(),
                 Resource.Error("HTTP 500 Response.error()")
             ),
-            receivedUiStates
+            receivedUiStates)
         )
     }
 
@@ -86,7 +93,7 @@ class MainViewModelTest {
         assertTrue(receivedUiStates.isEmpty())
         val viewModel = MainViewModel(
             GetWeatherUseCase(FakeWeatherRepository(FakeIOErrorApi())),
-            GetUserLocationUseCase(FakeLocationTracker()),
+            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTracker())),
             SavedStateHandle()
         )
 
@@ -96,12 +103,13 @@ class MainViewModelTest {
             .launchIn(this)
 
         advanceUntilIdle()
-        assertEquals(
-            listOf<Resource<Weather>>(
+
+        assert(compareResourceLists(
+            listOf(
                 Resource.Loading(),
                 Resource.Error("Couldn't reach server. Check your internet connection.")
             ),
-            receivedUiStates
+            receivedUiStates)
         )
     }
 }

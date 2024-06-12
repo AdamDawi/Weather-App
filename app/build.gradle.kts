@@ -93,6 +93,9 @@ dependencies {
     //permissions
     implementation("com.google.accompanist:accompanist-permissions:0.24.13-rc")
 
+    //svg animations
+    implementation("com.caverock:androidsvg:1.4")
+
     // Local unit tests
     testImplementation("androidx.test:core:1.4.0")
     testImplementation("junit:junit:4.13.2")

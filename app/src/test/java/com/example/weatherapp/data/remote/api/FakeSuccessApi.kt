@@ -9,7 +9,7 @@ class FakeSuccessApi: WeatherApi{
     override suspend fun getWeather(
         latitude: String,
         longitude: String,
-        hourly: String,
+        current: String,
         timezone: String
     ): WeatherDto {
         delay(1000)

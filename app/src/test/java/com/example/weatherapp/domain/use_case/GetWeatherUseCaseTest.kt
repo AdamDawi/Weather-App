@@ -5,9 +5,11 @@ import com.example.weatherapp.common.mockWeather
 import com.example.weatherapp.data.remote.api.FakeHttpErrorApi
 import com.example.weatherapp.data.remote.api.FakeIOErrorApi
 import com.example.weatherapp.data.remote.api.FakeSuccessApi
+import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.data.repository.FakeWeatherRepository
 import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.utils.ReplaceMainDispatcherRule
+import com.example.weatherapp.utils.compareResourceLists
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -40,11 +42,12 @@ class GetWeatherUseCaseTest {
 
         advanceUntilIdle()
 
-        assertEquals(
-            listOf(
-                Resource.Success(mockWeather)
-            ),
-            receivedUiStates
+        assert(
+            compareResourceLists(
+                listOf(
+                    Resource.Success(mockWeather.toWeather())
+                ),
+            receivedUiStates)
         )
     }
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,11 +63,12 @@ class GetWeatherUseCaseTest {
 
         advanceUntilIdle()
 
-        assertEquals(
-            listOf<Resource<Weather>>(
-                Resource.Error("HTTP 500 Response.error()")
-            ),
-            receivedUiStates
+        assert(
+            compareResourceLists(
+                listOf<Resource<Weather>>(
+                    Resource.Error("HTTP 500 Response.error()")
+                ),
+                receivedUiStates)
         )
     }
 
@@ -81,11 +85,12 @@ class GetWeatherUseCaseTest {
 
         advanceUntilIdle()
 
-        assertEquals(
-            listOf<Resource<Weather>>(
-                Resource.Error("Couldn't reach server. Check your internet connection.")
-            ),
-            receivedUiStates
+        assert(
+            compareResourceLists(
+                listOf<Resource<Weather>>(
+                    Resource.Error("Couldn't reach server. Check your internet connection.")
+                ),
+                receivedUiStates)
         )
     }
 }
