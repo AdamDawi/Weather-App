@@ -42,7 +42,8 @@ fun WeatherContent(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -74,12 +75,13 @@ fun WeatherContent(
                 fontSize = 24.sp
             )
         }
-        Box(modifier = Modifier,
+        Box(
+            modifier = Modifier,
             contentAlignment = Alignment.TopCenter
-        ){
+        ) {
             WeatherIconBasedOnCode(
                 weatherCode = weatherData.current.weather_code,
-                isDay = weatherData.current.is_day==1
+                isDay = weatherData.current.is_day == 1
             )
             Text(
                 modifier = Modifier
@@ -116,9 +118,10 @@ fun WeatherContent(
                     title = "Humidity",
                     value = weatherData.current.relative_humidity_2m.toString(),
                     unit = weatherData.current_units.relative_humidity_2m,
-                    icon = painterResource(id =
-                        if(weatherData.current.relative_humidity_2m < 20.0) R.drawable.ic_humidity_low
-                        else if(weatherData.current.relative_humidity_2m < 80.0) R.drawable.ic_humidity_medium
+                    icon = painterResource(
+                        id =
+                        if (weatherData.current.relative_humidity_2m < 20.0) R.drawable.ic_humidity_low
+                        else if (weatherData.current.relative_humidity_2m < 80.0) R.drawable.ic_humidity_medium
                         else R.drawable.ic_humidity_high
                     )
                 )
@@ -128,15 +131,33 @@ fun WeatherContent(
                     title = "Cloud cover",
                     value = weatherData.current.cloud_cover.toString(),
                     unit = weatherData.current_units.cloud_cover,
-                    icon = painterResource(id = R.drawable.ic_cloud)
+                    icon = painterResource(
+                        id =
+                        if (weatherData.current.cloud_cover < 60.0) R.drawable.ic_cloud
+                        else R.drawable.ic_cloud_filled
+                    )
                 )
             }
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                modifier = Modifier.padding(9.dp),
+                text = "Daily forecast",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        RowOfDailyWeather(daily = weatherData.daily, dailyUnits = weatherData.daily_units)
     }
 }
 
 
-@Preview(name = "Light Mode", showBackground = true)
+@Preview(name = "Light Mode", showBackground = true, showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun WeatherContentDefaultPreview() {
@@ -144,7 +165,11 @@ private fun WeatherContentDefaultPreview() {
         Surface {
             WeatherContent(
                 currentDate = mockCurrentDate,
-                weatherData = mockWeather.toWeather(),
+                weatherData = mockWeather.toWeather()
+                    .copy(
+                        current = mockWeather.toWeather().current
+                            .copy(relative_humidity_2m = 15.0, cloud_cover = 20.0)
+                    ),
                 location = "Polska, Lublin",
                 onThemeUpdate = {},
                 darkTheme = isSystemInDarkTheme()
@@ -162,7 +187,14 @@ private fun WeatherContentThunderstormPreview() {
             WeatherContent(
                 currentDate = mockCurrentDate,
                 weatherData = mockWeather.toWeather()
-                    .copy(current = mockWeather.toWeather().current.copy(weather_code = 95)),
+                    .copy(
+                        current = mockWeather.toWeather().current
+                            .copy(
+                                weather_code = 95,
+                                relative_humidity_2m = 25.0,
+                                cloud_cover = 80.0
+                            )
+                    ),
                 location = "Polska, Lublin",
                 onThemeUpdate = {},
                 darkTheme = isSystemInDarkTheme()
@@ -177,7 +209,10 @@ private fun WeatherContentRainAndSnowPreview() {
     WeatherContent(
         currentDate = mockCurrentDate,
         weatherData = mockWeather.toWeather()
-            .copy(current = mockWeather.toWeather().current.copy(weather_code = 66)),
+            .copy(
+                current = mockWeather.toWeather().current
+                    .copy(weather_code = 66, relative_humidity_2m = 80.0)
+            ),
         location = "Polska, Lublin",
         onThemeUpdate = {},
         darkTheme = isSystemInDarkTheme()

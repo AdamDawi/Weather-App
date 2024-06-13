@@ -11,7 +11,11 @@ data class WeatherDto(
     val longitude: Double,
     val timezone: String,
     val timezone_abbreviation: String,
-    val utc_offset_seconds: Int
+    val utc_offset_seconds: Int,
+    val daily: Daily,
+    val daily_units: DailyUnits,
+    val hourly: Hourly,
+    val hourly_units: HourlyUnits
 )
 
 fun WeatherDto.toWeather(): Weather {
@@ -19,6 +23,10 @@ fun WeatherDto.toWeather(): Weather {
         latitude = latitude,
         longitude = longitude,
         current = current,
-        current_units = current_units
+        current_units = current_units,
+        daily = daily,
+        daily_units = daily_units,
+        hourly = hourly.copy(time = hourly.time.take(24)),
+        hourly_units = hourly_units
     )
 }
