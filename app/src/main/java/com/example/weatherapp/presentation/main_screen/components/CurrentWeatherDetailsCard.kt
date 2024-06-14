@@ -28,7 +28,7 @@ import com.example.weatherapp.R
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 
 @Composable
-fun CardForDetail(
+fun CurrentWeatherDetailsCard(
     modifier: Modifier = Modifier,
     title: String,
     value: String,
@@ -41,7 +41,7 @@ fun CardForDetail(
            color = MaterialTheme.colorScheme.primaryContainer,
            shape = RoundedCornerShape(12.dp)
        )
-       .size(100.dp, 80.dp)
+       .size(140.dp, 80.dp)
        .padding(8.dp)
 
    ){
@@ -74,14 +74,29 @@ fun CardForDetail(
 @Preview(name = "Light Mode")
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun CardForDetailPreview() {
+private fun CardForDetailRainPreview() {
     WeatherAppTheme {
         Surface {
-            CardForDetail(
+            CurrentWeatherDetailsCard(
                 title = "Rain",
                 value = "2.0",
-                unit = null,
+                unit = "mm",
                 icon = painterResource(id = R.drawable.ic_rain)
+            )
+        }
+    }
+}
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CardForDetailHumidityPreview() {
+    WeatherAppTheme {
+        Surface {
+            CurrentWeatherDetailsCard(
+                title = "Rain",
+                value = "46.0",
+                unit = "%",
+                icon = painterResource(id = R.drawable.ic_humidity_medium)
             )
         }
     }

@@ -12,6 +12,7 @@ interface WeatherApi{
         @Query("current") current: String = "temperature_2m,is_day,rain,cloud_cover,wind_speed_10m,weather_code,relative_humidity_2m",
         @Query("daily") daily: String = "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset",
         @Query("hourly") hourly: String = "temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m",
+        @Query("past_days") pastDays: Int = 2,
         @Query("timezone") timezone: String = "auto"
     ): WeatherDto
 }

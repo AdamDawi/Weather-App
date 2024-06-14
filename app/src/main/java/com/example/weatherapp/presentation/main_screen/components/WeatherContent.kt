@@ -1,17 +1,19 @@
 package com.example.weatherapp.presentation.main_screen.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.presentation.ui.theme.DarkerWhite
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeatherContent(
     modifier: Modifier = Modifier,
@@ -40,81 +43,91 @@ fun WeatherContent(
     onThemeUpdate: () -> Unit,
     darkTheme: Boolean
 ) {
-    Column(
+
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = 2)
+    val snapBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+    LazyColumn(
         modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ThemeSwitcher(darkTheme = darkTheme) {
-                onThemeUpdate()
-            }
-            Text(
-                text = "Last update time: $currentDate",
-                fontSize = 12.sp,
+        stickyHeader {
+            Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(8.dp),
-                color = if (darkTheme) DarkerWhite else Color.Gray
-            )
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ThemeSwitcher(darkTheme = darkTheme) {
+                    onThemeUpdate()
+                }
+                Text(
+                    text = "Last update time: $currentDate",
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .padding(8.dp),
+                    color = if (darkTheme) DarkerWhite else Color.Gray
+                )
+            }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = location,
-                fontSize = 24.sp
-            )
-        }
-        Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.TopCenter
-        ) {
-            WeatherIconBasedOnCode(
-                weatherCode = weatherData.current.weather_code,
-                isDay = weatherData.current.is_day == 1
-            )
-            Text(
+        item {
+            Row(
                 modifier = Modifier
-                    .padding(top = 130.dp),
-                text = "${weatherData.current.temperature_2m} ${weatherData.current_units.temperature_2m}",
-                fontSize = 72.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-        }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item {
-                CardForDetail(
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = location,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            LazyRow(
+                state = listState,
+                flingBehavior = snapBehavior,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 70.dp),
+                horizontalArrangement = Arrangement.spacedBy(50.dp)
+            ) {
+                itemsIndexed(
+                    weatherData.daily.time
+                ){index, _ ->
+                    DailyWeatherCard(
+                        weatherData = weatherData,
+                        index = index
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                CurrentWeatherDetailsCard(
                     title = "Rain",
                     value = weatherData.current.rain.toString(),
                     unit = weatherData.current_units.rain,
                     icon = painterResource(id = R.drawable.ic_rain)
                 )
-            }
-            item {
-                CardForDetail(
+                CurrentWeatherDetailsCard(
                     title = "Wind speed",
                     value = weatherData.current.wind_speed_10m.toString(),
                     unit = weatherData.current_units.wind_speed_10m,
                     icon = painterResource(id = R.drawable.ic_wind)
                 )
             }
-            item {
-                CardForDetail(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                CurrentWeatherDetailsCard(
                     title = "Humidity",
                     value = weatherData.current.relative_humidity_2m.toString(),
                     unit = weatherData.current_units.relative_humidity_2m,
@@ -125,9 +138,7 @@ fun WeatherContent(
                         else R.drawable.ic_humidity_high
                     )
                 )
-            }
-            item {
-                CardForDetail(
+                CurrentWeatherDetailsCard(
                     title = "Cloud cover",
                     value = weatherData.current.cloud_cover.toString(),
                     unit = weatherData.current_units.cloud_cover,
@@ -139,25 +150,10 @@ fun WeatherContent(
                 )
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                modifier = Modifier.padding(9.dp),
-                text = "Daily forecast",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        RowOfDailyWeather(daily = weatherData.daily, dailyUnits = weatherData.daily_units)
     }
 }
 
-
-@Preview(name = "Light Mode", showBackground = true, showSystemUi = true)
+@Preview(name = "Light Mode", showBackground = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun WeatherContentDefaultPreview() {

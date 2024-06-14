@@ -1,6 +1,5 @@
 package com.example.weatherapp.common
 
-import android.location.Location
 import com.example.weatherapp.data.remote.dto.Current
 import com.example.weatherapp.data.remote.dto.CurrentUnits
 import com.example.weatherapp.data.remote.dto.Daily
@@ -129,5 +128,5 @@ val mockWeather = WeatherDto(
     hourly_units = mockHourlyUnits
 )
 
-const val mockCurrentDate: String = "17:50:33 09/06/2024"
+const val mockCurrentDate: String = "17:50:33"
 

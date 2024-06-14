@@ -17,7 +17,7 @@ fun WeatherIconBasedOnCode(
 ) {
     Icon(
         modifier = modifier
-            .size(150.dp),
+            .size(170.dp),
         painter = painterResource(id =
         when (weatherCode) {
             0 -> if(isDay) R.drawable.clear_sky else R.drawable.clear_night
