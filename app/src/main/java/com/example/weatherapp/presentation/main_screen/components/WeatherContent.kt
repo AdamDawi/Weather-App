@@ -2,6 +2,7 @@ package com.example.weatherapp.presentation.main_screen.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.presentation.ui.theme.DarkerWhite
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -55,6 +58,7 @@ fun WeatherContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -84,7 +88,6 @@ fun WeatherContent(
                     fontWeight = FontWeight.SemiBold
                 )
             }
-
             LazyRow(
                 state = listState,
                 flingBehavior = snapBehavior,
@@ -105,7 +108,19 @@ fun WeatherContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Today's weather details",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 CurrentWeatherDetailsCard(
@@ -124,7 +139,7 @@ fun WeatherContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 CurrentWeatherDetailsCard(
@@ -147,6 +162,17 @@ fun WeatherContent(
                         if (weatherData.current.cloud_cover < 60.0) R.drawable.ic_cloud
                         else R.drawable.ic_cloud_filled
                     )
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                SunsetSunriseCard(
+                    sunrise = "${LocalDateTime.parse(weatherData.daily.sunrise[2]).hour}:${if(LocalDateTime.parse(weatherData.daily.sunrise[2]).minute < 10) "0" + LocalDateTime.parse(weatherData.daily.sunrise[2]).minute else LocalDateTime.parse(weatherData.daily.sunrise[2]).minute}",
+                    sunset = "${LocalDateTime.parse(weatherData.daily.sunset[2]).hour}:${if(LocalDateTime.parse(weatherData.daily.sunset[2]).minute < 10) "0" + LocalDateTime.parse(weatherData.daily.sunset[2]).minute else LocalDateTime.parse(weatherData.daily.sunset[2]).minute}"
                 )
             }
         }

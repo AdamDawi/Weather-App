@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,7 +56,7 @@ fun DailyWeatherCard(
                 modifier = Modifier
                     .padding(top = 170.dp),
                 text = "${weatherData.daily.temperature_2m_max[index].roundToInt()}${weatherData.daily_units.temperature_2m_max}",
-                fontSize = 62.sp,
+                fontSize = 58.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -67,8 +66,7 @@ fun DailyWeatherCard(
                 .shadow(1.dp, CircleShape)
                 .align(Alignment.TopCenter)
                 .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.7f))
-
+                .background(MaterialTheme.colorScheme.tertiaryContainer)
         ){
             Text(
                 modifier = Modifier.padding(8.dp),
@@ -78,7 +76,7 @@ fun DailyWeatherCard(
                         LocalDateTime.parse(weatherData.daily.time[index]+"T00:00").month.toString().lowercase()
                             .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
                 ,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
         }
