@@ -6,10 +6,14 @@ import com.example.weatherapp.data.remote.dto.WeatherDto
 import kotlinx.coroutines.delay
 
 class FakeSuccessApi: WeatherApi{
+
     override suspend fun getWeather(
         latitude: String,
         longitude: String,
         current: String,
+        daily: String,
+        hourly: String,
+        pastDays: Int,
         timezone: String
     ): WeatherDto {
         delay(1000)

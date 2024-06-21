@@ -3,7 +3,7 @@ package com.example.weatherapp.presentation.main_screen
 import androidx.lifecycle.SavedStateHandle
 import com.example.weatherapp.common.Resource
 import com.example.weatherapp.common.mockWeather
-import com.example.weatherapp.data.location.FakeLocationTracker
+import com.example.weatherapp.data.location.FakeLocationTrackerSuccess
 import com.example.weatherapp.data.remote.api.FakeHttpErrorApi
 import com.example.weatherapp.data.remote.api.FakeIOErrorApi
 import com.example.weatherapp.data.remote.api.FakeSuccessApi
@@ -39,7 +39,7 @@ class MainViewModelTest {
         assertTrue(receivedUiStates.isEmpty())
         val viewModel = MainViewModel(
             GetWeatherUseCase(FakeWeatherRepository(FakeSuccessApi())),
-            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTracker())),
+            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTrackerSuccess())),
             SavedStateHandle()
         )
 
@@ -65,7 +65,7 @@ class MainViewModelTest {
         assertTrue(receivedUiStates.isEmpty())
         val viewModel = MainViewModel(
             GetWeatherUseCase(FakeWeatherRepository(FakeHttpErrorApi())),
-            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTracker())),
+            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTrackerSuccess())),
             SavedStateHandle()
         )
         viewModel.state.onEach {
@@ -90,7 +90,7 @@ class MainViewModelTest {
         assertTrue(receivedUiStates.isEmpty())
         val viewModel = MainViewModel(
             GetWeatherUseCase(FakeWeatherRepository(FakeIOErrorApi())),
-            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTracker())),
+            GetUserLocationUseCase(FakeLocationRepository(FakeLocationTrackerSuccess())),
             SavedStateHandle()
         )
 
