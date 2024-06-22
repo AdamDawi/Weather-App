@@ -51,11 +51,15 @@ class MainViewModel
                     when (locationResource) {
                         is Resource.Success -> {
                             val location = locationResource.data
-                            getWeatherUseCase(
-                                location?.longitude ?: 0.0,
-                                location?.latitude ?: 0.0
-                            ).collect { weatherResource ->
-                                emit(weatherResource)
+                            if(location == null){
+                                emit(Resource.Error("Location not found"))
+                            }else{
+                                getWeatherUseCase(
+                                    location.longitude,
+                                    location.latitude
+                                ).collect { weatherResource ->
+                                    emit(weatherResource)
+                                }
                             }
                         }
 
@@ -63,9 +67,7 @@ class MainViewModel
                             emit(Resource.Error(locationResource.message ?: "Error occurred"))
                         }
 
-                        is Resource.Loading -> {
-                            emit(Resource.Loading())
-                        }
+                        is Resource.Loading -> {}
                     }
                 }
             } catch (e: Exception) {

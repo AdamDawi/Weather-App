@@ -53,7 +53,6 @@ class GetUserLocationUseCaseTest {
         }.launchIn(this)
 
         advanceUntilIdle()
-        println(receivedUiStates[0].data?.latitude)
         assertEquals(receivedUiStates[0].data?.latitude, 52.2296756)
         assertEquals(receivedUiStates[0].data?.longitude, 21.0122287)
     }
@@ -71,7 +70,7 @@ class GetUserLocationUseCaseTest {
         advanceUntilIdle()
         assert(
             compareResourceLists(
-                listOf<Resource<Location>>(
+                listOf(
                     Resource.Error("error fetching location")
                 ),
                 receivedUiStates
