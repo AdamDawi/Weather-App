@@ -1,5 +1,8 @@
 package com.example.weatherapp.presentation.main_screen.components
 
+import android.content.res.Configuration
+import android.graphics.LinearGradient
+import android.graphics.PathMeasure
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,27 +13,37 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 
 @Composable
 fun SunsetSunriseCard(
     modifier: Modifier = Modifier,
     sunrise: String,
-    sunset: String
+    sunset: String,
+    sunPathProgressPercent: Float
 ) {
     Column(
         modifier = modifier
+            .shadow(2.dp, shape = RoundedCornerShape(40.dp))
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(40.dp))
@@ -45,45 +58,71 @@ fun SunsetSunriseCard(
             val canvasWidth = size.width
             val canvasHeight = size.height
 
-            val radius = canvasWidth / 4
-            val centerX = canvasWidth / 2
-            val centerY = canvasHeight
-            drawArc(
-                color = Color.Yellow,
-                startAngle = 180f,
-                sweepAngle = 180f,
-                useCenter = false,
-                topLeft = Offset(centerX - radius, centerY - radius),
-                size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
-                style = Stroke(width = 2.dp.toPx())
-            )
-            // Draw sun
-            val sunRadius = 5.dp.toPx()
-            val sunCenterY = centerY - radius
+            val path = Path().apply {
+                moveTo(canvasWidth.times(.08f), canvasHeight.times(0.96f))
+                cubicTo(
+                    canvasWidth.times(.10f),
+                    -100f,
+                    canvasWidth.times(.90f),
+                    -100f,
+                    canvasWidth.times(0.92f),
+                    canvasHeight.times(0.96f)
+                )
+            }
 
+            val path2 = Path().apply {
+                moveTo(canvasWidth.times(0f), canvasHeight.times(0.96f))
+                lineTo(canvasWidth.times(1f), canvasHeight.times(0.96f))
+            }
+
+            // Draw the path with gradient stroke
+            drawIntoCanvas { canvas ->
+                val gradientStartColor = Color.Yellow
+                val gradientEndColor = Color.LightGray
+                // Calculate gradient points
+                val gradientStart = getPositionOnPath(path, sunPathProgressPercent - 10f) // Slightly before sun
+                val gradientEnd = getPositionOnPath(path, sunPathProgressPercent + 10f)
+
+                val paint = android.graphics.Paint().apply {
+                    shader = LinearGradient(
+                        gradientStart[0],
+                        gradientStart[1],
+                        gradientEnd[0],
+                        gradientEnd[1],
+                        intArrayOf(gradientStartColor.copy(alpha = 0.7f).toArgb(), gradientEndColor.copy(alpha = 0.7f).toArgb()),
+                        floatArrayOf(0.5f,0.5f),
+                        android.graphics.Shader.TileMode.CLAMP
+                    )
+                    strokeWidth = 2.dp.toPx() // Set the stroke width as needed
+                    style = android.graphics.Paint.Style.STROKE // Set to stroke style
+                }
+
+                canvas.nativeCanvas.drawPath(path.asAndroidPath(), paint)
+            }
+
+            drawPath(
+                path = path2,
+                style = Stroke(width = 1.dp.toPx(), cap = StrokeCap.Round),
+                color = Color.LightGray.copy(alpha = 0.7f)
+            )
+
+            // draw sun
+            val sunRadius = 8.dp.toPx()
+            val position = getPositionOnPath(path, sunPathProgressPercent)
+
+            // sun shadow
+            drawCircle(
+                color = Color.Yellow.copy(alpha = 0.5f),
+                radius = sunRadius+3.dp.toPx(),
+                center = Offset(position[0], position[1]),
+            )
+
+            // sun
             drawCircle(
                 color = Color.Yellow,
                 radius = sunRadius,
-                center = Offset(centerX, sunCenterY),
-                style = Stroke(width = 2.dp.toPx())
+                center = Offset(position[0], position[1]),
             )
-
-            // Draw sun rays
-            val numRays = 12
-            val rayLength = 5.dp.toPx()
-            val rayWidth = 2.dp.toPx()
-            val angleStep = 360f / numRays
-
-            for (i in 0 until numRays) {
-                val angle = angleStep * i
-                rotate(degrees = angle, pivot = Offset(centerX, sunCenterY)) {
-                    drawRect(
-                        color = Color.Yellow,
-                        topLeft = Offset(centerX - rayWidth / 2, sunCenterY - sunRadius - rayLength),
-                        size = androidx.compose.ui.geometry.Size(rayWidth, rayLength)
-                    )
-                }
-            }
         }
         Row(
             modifier = Modifier
@@ -119,11 +158,28 @@ fun SunsetSunriseCard(
     }
 }
 
-@Preview
+// calculate position on path
+private fun getPositionOnPath(path: Path, percent: Float): FloatArray {
+    val pathMeasure = PathMeasure(path.asAndroidPath(), false)
+    val pathLength = pathMeasure.length
+
+    val position = FloatArray(2)
+    pathMeasure.getPosTan(pathLength * percent / 100f, position, null)
+
+    return position
+}
+
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SunsetSunriseCardPreview() {
-    SunsetSunriseCard(
-        sunrise = "04:13",
-        sunset = "20:48"
-    )
+    WeatherAppTheme {
+        Surface {
+            SunsetSunriseCard(
+                sunrise = "04:13",
+                sunset = "20:48",
+                sunPathProgressPercent = 50f
+            )
+        }
+    }
 }

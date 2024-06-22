@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,7 +89,12 @@ fun MainScreen(
                         color = Color.Black
                     )
                 }
-                is Resource.Error ->  { Text(text = state.message!!) }
+                is Resource.Error ->  {
+                    Text(
+                        text = state.message!!,
+                        textAlign = TextAlign.Center
+                    )
+                }
                 is Resource.Success -> {
                     WeatherContent(
                         currentDate = viewModel.currentDate,

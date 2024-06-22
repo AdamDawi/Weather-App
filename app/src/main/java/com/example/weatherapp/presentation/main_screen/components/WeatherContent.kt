@@ -35,6 +35,7 @@ import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.presentation.ui.theme.DarkerWhite
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -172,11 +173,23 @@ fun WeatherContent(
             ) {
                 SunsetSunriseCard(
                     sunrise = "${LocalDateTime.parse(weatherData.daily.sunrise[2]).hour}:${if(LocalDateTime.parse(weatherData.daily.sunrise[2]).minute < 10) "0" + LocalDateTime.parse(weatherData.daily.sunrise[2]).minute else LocalDateTime.parse(weatherData.daily.sunrise[2]).minute}",
-                    sunset = "${LocalDateTime.parse(weatherData.daily.sunset[2]).hour}:${if(LocalDateTime.parse(weatherData.daily.sunset[2]).minute < 10) "0" + LocalDateTime.parse(weatherData.daily.sunset[2]).minute else LocalDateTime.parse(weatherData.daily.sunset[2]).minute}"
+                    sunset = "${LocalDateTime.parse(weatherData.daily.sunset[2]).hour}:${if(LocalDateTime.parse(weatherData.daily.sunset[2]).minute < 10) "0" + LocalDateTime.parse(weatherData.daily.sunset[2]).minute else LocalDateTime.parse(weatherData.daily.sunset[2]).minute}",
+                    sunPathProgressPercent = calculateSunPathProgressPercent(
+                        LocalDateTime.parse(weatherData.daily.sunrise[2]),
+                        LocalDateTime.parse(weatherData.daily.sunset[2]),
+                        LocalDateTime.now()
+                        )
                 )
             }
         }
     }
+}
+
+private fun calculateSunPathProgressPercent(sunriseTime: LocalDateTime, sunsetTime: LocalDateTime, currentTime: LocalDateTime): Float {
+    val totalDayMinutes = sunriseTime.until(sunsetTime, ChronoUnit.MINUTES)
+    val elapsedMinutes = sunriseTime.until(currentTime, ChronoUnit.MINUTES)
+
+    return (elapsedMinutes.toFloat() / totalDayMinutes.toFloat()) * 100
 }
 
 @Preview(name = "Light Mode", showBackground = true)
