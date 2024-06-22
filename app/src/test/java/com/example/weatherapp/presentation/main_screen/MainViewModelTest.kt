@@ -4,7 +4,6 @@ import android.location.Location
 import androidx.lifecycle.SavedStateHandle
 import com.example.weatherapp.common.Resource
 import com.example.weatherapp.common.mockWeather
-import com.example.weatherapp.data.remote.dto.WeatherDto
 import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
@@ -12,25 +11,24 @@ import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import com.example.weatherapp.utils.ReplaceMainDispatcherRule
 import com.example.weatherapp.utils.assertResourceListsEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
-import okio.IOException
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.anyDouble
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
-import retrofit2.HttpException
-import retrofit2.Response
 
 class MainViewModelTest {
     private lateinit var locationMock: Location
@@ -48,9 +46,26 @@ class MainViewModelTest {
         locationMock = mock(Location::class.java)
         getWeatherUseCaseMock = mock(GetWeatherUseCase::class.java)
         getUserLocationUseCaseMock = mock(GetUserLocationUseCase::class.java)
-        viewModel = MainViewModel(getWeatherUseCaseMock, getUserLocationUseCaseMock, SavedStateHandle())
+        viewModel =
+            MainViewModel(getWeatherUseCaseMock, getUserLocationUseCaseMock, SavedStateHandle())
         successLocationFlow()
         successWeatherFlow()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should pass correct parameters to weather use case`() = runTest {
+        val ac = ArgumentCaptor.forClass(Double::class.java)
+        assertTrue(receivedUiStates.isEmpty())
+
+        viewModel.state.first()
+
+        advanceUntilIdle()
+
+        verify(getWeatherUseCaseMock, times(2)).invoke(ac.capture(), ac.capture())
+        val params = ac.allValues
+        assertEquals(21.0122287, params[0], 0.00000001)
+        assertEquals(52.2296756, params[1], 0.00000001)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -164,36 +179,47 @@ class MainViewModelTest {
         )
     }
 
-    private fun successLocationFlow(){
+    private fun successLocationFlow() {
+        `when`(locationMock.longitude).thenReturn(21.0122287)
+        `when`(locationMock.latitude).thenReturn(52.2296756)
         `when`(getUserLocationUseCaseMock.invoke()).thenReturn(flowOf(Resource.Success(locationMock)))
     }
+
     private fun successWeatherFlow() {
-        `when`(getWeatherUseCaseMock.invoke(anyDouble(), anyDouble())).thenReturn(flowOf(Resource.Success(mockWeather.toWeather())))
+        `when`(
+            getWeatherUseCaseMock.invoke(
+                anyDouble(),
+                anyDouble()
+            )
+        ).thenReturn(flowOf(Resource.Success(mockWeather.toWeather())))
     }
-    private fun apiHttpError(){
-        `when`(getWeatherUseCaseMock.invoke(anyDouble(), anyDouble())).thenThrow(HttpException(
-            Response.error<WeatherDto>(
-                500,
-                "".toResponseBody("application/json".toMediaTypeOrNull())
+
+    private fun apiHttpError() {
+        `when`(
+            getWeatherUseCaseMock.invoke(
+                anyDouble(),
+                anyDouble()
+            )
+        ).thenReturn(flowOf(Resource.Error("HTTP 500 Response.error()")))
+    }
+
+    private fun apiIOError() {
+        `when`(getWeatherUseCaseMock.invoke(anyDouble(), anyDouble())).thenReturn(
+            flowOf(
+                Resource.Error("Couldn't reach server. Check your internet connection.")
             )
         )
-        )
     }
-    private fun apiIOError(){
-        `when`(getWeatherUseCaseMock.invoke(anyDouble(), anyDouble())).thenReturn(
-            flow {
-                throw IOException("Couldn't reach server. Check your internet connection.")
-            }
-        )
-    }
-    private fun locationError(){
+
+    private fun locationError() {
         `when`(getUserLocationUseCaseMock.invoke()).thenReturn(
-            flow {
-                throw Exception("Error fetching location")
-            }
+            flowOf(
+                Resource.Error("Error fetching location")
+            )
         )
     }
-    private fun locationNull(){
+
+    private fun locationNull() {
         `when`(getUserLocationUseCaseMock.invoke()).thenReturn(flowOf(Resource.Success(null)))
     }
 }

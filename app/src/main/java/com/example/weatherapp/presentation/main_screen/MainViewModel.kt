@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -31,10 +32,10 @@ class MainViewModel
     private val getWeatherUseCase: GetWeatherUseCase,
     private val getUserLocationUseCase: GetUserLocationUseCase,
     savedStateHandle: SavedStateHandle
-): ViewModel(){
+) : ViewModel() {
 
     @OptIn(SavedStateHandleSaveableApi::class)
-    var currentDate by savedStateHandle.saveable{
+    var currentDate by savedStateHandle.saveable {
         mutableStateOf("")
     }
         private set
@@ -42,8 +43,8 @@ class MainViewModel
     val state: StateFlow<Resource<Weather>> = flow<Resource<Weather>> {
         while (true) {
             Timber.d("Fetching current location and weather")
-            try {
-                getUserLocationUseCase()
+
+            getUserLocationUseCase()
                 .onEach {
                     currentDate = getCurrentDateWithFormat()
                     savedStateHandle[SAVED_STATE_DATE] = currentDate
@@ -51,9 +52,10 @@ class MainViewModel
                     when (locationResource) {
                         is Resource.Success -> {
                             val location = locationResource.data
-                            if(location == null){
+                            if (location == null) {
                                 emit(Resource.Error("Location not found"))
-                            }else{
+                            } else {
+                                Timber.e("getWeather")
                                 getWeatherUseCase(
                                     location.longitude,
                                     location.latitude
@@ -62,6 +64,7 @@ class MainViewModel
                                 }
                             }
                         }
+
                         is Resource.Error -> {
                             emit(Resource.Error(locationResource.message ?: "Error occurred"))
                         }
@@ -69,11 +72,10 @@ class MainViewModel
                         is Resource.Loading -> {}
                     }
                 }
-            } catch (e: Exception) {
-                emit(Resource.Error(e.localizedMessage ?: "An unexpected error when fetching weather"))
-            }
             delay(5000)
         }
+    }.catch { e ->
+        emit(Resource.Error(e.localizedMessage ?: "An unexpected error when fetching weather"))
     }.onCompletion {
         Timber.d("Weather and Location flow completed")
     }.stateIn(
@@ -87,7 +89,7 @@ class MainViewModel
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun getCurrentDateWithFormat(): String{
+    fun getCurrentDateWithFormat(): String {
         return SimpleDateFormat("HH:mm:ss").format(Date())
     }
 }
