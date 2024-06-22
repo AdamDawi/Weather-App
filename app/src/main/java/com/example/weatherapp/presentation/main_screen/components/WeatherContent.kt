@@ -172,8 +172,8 @@ fun WeatherContent(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 SunsetSunriseCard(
-                    sunrise = "${LocalDateTime.parse(weatherData.daily.sunrise[2]).hour}:${if(LocalDateTime.parse(weatherData.daily.sunrise[2]).minute < 10) "0" + LocalDateTime.parse(weatherData.daily.sunrise[2]).minute else LocalDateTime.parse(weatherData.daily.sunrise[2]).minute}",
-                    sunset = "${LocalDateTime.parse(weatherData.daily.sunset[2]).hour}:${if(LocalDateTime.parse(weatherData.daily.sunset[2]).minute < 10) "0" + LocalDateTime.parse(weatherData.daily.sunset[2]).minute else LocalDateTime.parse(weatherData.daily.sunset[2]).minute}",
+                    sunrise = provideFormattedSunDate(weatherData.daily.sunrise[2]),
+                    sunset = provideFormattedSunDate(weatherData.daily.sunset[2]),
                     sunPathProgressPercent = calculateSunPathProgressPercent(
                         LocalDateTime.parse(weatherData.daily.sunrise[2]),
                         LocalDateTime.parse(weatherData.daily.sunset[2]),
@@ -185,11 +185,17 @@ fun WeatherContent(
     }
 }
 
+// time format is HH:mm
+private fun provideFormattedSunDate(time: String): String{
+    val localDateTime = LocalDateTime.parse(time)
+    return "${localDateTime.hour}:${if(localDateTime.minute < 10) "0" + localDateTime.minute else localDateTime.minute}"
+}
+
 private fun calculateSunPathProgressPercent(sunriseTime: LocalDateTime, sunsetTime: LocalDateTime, currentTime: LocalDateTime): Float {
     val totalDayMinutes = sunriseTime.until(sunsetTime, ChronoUnit.MINUTES)
     val elapsedMinutes = sunriseTime.until(currentTime, ChronoUnit.MINUTES)
 
-    return (elapsedMinutes.toFloat() / totalDayMinutes.toFloat()) * 100
+    return ((elapsedMinutes.toFloat() / totalDayMinutes.toFloat()) * 100).coerceAtMost(100f)
 }
 
 @Preview(name = "Light Mode", showBackground = true)

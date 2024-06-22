@@ -55,7 +55,6 @@ class MainViewModel
                             if (location == null) {
                                 emit(Resource.Error("Location not found"))
                             } else {
-                                Timber.e("getWeather")
                                 getWeatherUseCase(
                                     location.longitude,
                                     location.latitude

@@ -57,6 +57,7 @@ fun SunsetSunriseCard(
         ) {
             val canvasWidth = size.width
             val canvasHeight = size.height
+            val clampedPercent = sunPathProgressPercent.coerceIn(0f, 100f)
 
             val path = Path().apply {
                 moveTo(canvasWidth.times(.08f), canvasHeight.times(0.96f))
@@ -80,8 +81,8 @@ fun SunsetSunriseCard(
                 val gradientStartColor = Color.Yellow
                 val gradientEndColor = Color.LightGray
                 // Calculate gradient points
-                val gradientStart = getPositionOnPath(path, sunPathProgressPercent - 10f) // Slightly before sun
-                val gradientEnd = getPositionOnPath(path, sunPathProgressPercent + 10f)
+                val gradientStart = getPositionOnPath(path, clampedPercent-0.01f) // Slightly before sun
+                val gradientEnd = getPositionOnPath(path, clampedPercent)
 
                 val paint = android.graphics.Paint().apply {
                     shader = LinearGradient(
@@ -93,10 +94,9 @@ fun SunsetSunriseCard(
                         floatArrayOf(0.5f,0.5f),
                         android.graphics.Shader.TileMode.CLAMP
                     )
-                    strokeWidth = 2.dp.toPx() // Set the stroke width as needed
-                    style = android.graphics.Paint.Style.STROKE // Set to stroke style
+                    strokeWidth = 2.dp.toPx()
+                    style = android.graphics.Paint.Style.STROKE
                 }
-
                 canvas.nativeCanvas.drawPath(path.asAndroidPath(), paint)
             }
 
@@ -108,7 +108,7 @@ fun SunsetSunriseCard(
 
             // draw sun
             val sunRadius = 8.dp.toPx()
-            val position = getPositionOnPath(path, sunPathProgressPercent)
+            val position = getPositionOnPath(path, clampedPercent)
 
             // sun shadow
             drawCircle(
@@ -165,20 +165,34 @@ private fun getPositionOnPath(path: Path, percent: Float): FloatArray {
 
     val position = FloatArray(2)
     pathMeasure.getPosTan(pathLength * percent / 100f, position, null)
-
     return position
 }
 
 @Preview(name = "Light Mode")
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun SunsetSunriseCardPreview() {
+private fun SunsetSunriseCardHighPercentPreview() {
     WeatherAppTheme {
         Surface {
             SunsetSunriseCard(
                 sunrise = "04:13",
                 sunset = "20:48",
-                sunPathProgressPercent = 50f
+                sunPathProgressPercent = 100f
+            )
+        }
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SunsetSunriseCardLowPercentPreview() {
+    WeatherAppTheme {
+        Surface {
+            SunsetSunriseCard(
+                sunrise = "04:13",
+                sunset = "20:48",
+                sunPathProgressPercent = 20f
             )
         }
     }
