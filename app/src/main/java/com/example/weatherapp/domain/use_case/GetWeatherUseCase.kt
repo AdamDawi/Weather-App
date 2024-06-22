@@ -11,11 +11,11 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-class GetWeatherUseCase
+open class GetWeatherUseCase
 @Inject constructor(
     private val repository: WeatherRepository
 ){
-    operator fun invoke(longitude: Double, latitude: Double): Flow<Resource<Weather>> = flow {
+    open operator fun invoke(longitude: Double, latitude: Double): Flow<Resource<Weather>> = flow {
             Timber.d("Fetching current weather")
             Timber.d("$longitude, $latitude")
             try {

@@ -62,7 +62,6 @@ class MainViewModel
                                 }
                             }
                         }
-
                         is Resource.Error -> {
                             emit(Resource.Error(locationResource.message ?: "Error occurred"))
                         }

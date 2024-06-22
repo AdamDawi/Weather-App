@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
 import javax.inject.Inject
 
-class GetUserLocationUseCase@Inject constructor(
+open class GetUserLocationUseCase@Inject constructor(
     private val repository: LocationRepository
 ) {
-    operator fun invoke(): Flow<Resource<Location>> = flow{
+    open operator fun invoke(): Flow<Resource<Location>> = flow{
         Timber.d("Fetching current location")
         try {
             val result = repository.getCurrentLocation()
