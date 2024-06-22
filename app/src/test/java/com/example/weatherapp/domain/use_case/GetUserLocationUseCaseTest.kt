@@ -6,7 +6,7 @@ import com.example.weatherapp.data.location.FakeLocationTrackerError
 import com.example.weatherapp.data.location.FakeLocationTrackerSuccess
 import com.example.weatherapp.data.repository.FakeLocationRepository
 import com.example.weatherapp.utils.ReplaceMainDispatcherRule
-import com.example.weatherapp.utils.compareResourceLists
+import com.example.weatherapp.utils.assertResourceListsEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,13 +28,6 @@ class GetUserLocationUseCaseTest {
     private lateinit var getUserLocationUseCase: GetUserLocationUseCase
     private val receivedUiStates = mutableListOf<Resource<Location>>()
     // endregion helper fields
-
-    private lateinit var SUT: GetUserLocationUseCase
-
-    @Before
-    fun setup() {
-        SUT = GetUserLocationUseCase(FakeLocationRepository(FakeLocationTrackerSuccess()))
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get: Rule
@@ -68,14 +60,14 @@ class GetUserLocationUseCaseTest {
         }.launchIn(this)
 
         advanceUntilIdle()
-        assert(
-            compareResourceLists(
-                listOf(
-                    Resource.Error("error fetching location")
-                ),
-                receivedUiStates
-            )
+
+        assertResourceListsEquals(
+            listOf(
+                Resource.Error("Error fetching location")
+            ),
+            receivedUiStates
         )
+
     }
     // endregion helper methods
 

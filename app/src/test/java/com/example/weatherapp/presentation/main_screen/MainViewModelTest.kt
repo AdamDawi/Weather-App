@@ -17,7 +17,7 @@ import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
 import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import com.example.weatherapp.utils.ReplaceMainDispatcherRule
-import com.example.weatherapp.utils.compareResourceLists
+import com.example.weatherapp.utils.assertResourceListsEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -61,13 +61,15 @@ class MainViewModelTest {
 
         advanceUntilIdle()
 
-        assert(compareResourceLists(
+
+        assertResourceListsEquals(
             listOf(
                 Resource.Loading(),
                 Resource.Success(mockWeather.toWeather())
-        ),
-            receivedUiStates)
+            ),
+            receivedUiStates
         )
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -86,13 +88,14 @@ class MainViewModelTest {
 
         advanceUntilIdle()
 
-        assert(compareResourceLists(
+        assertResourceListsEquals(
             listOf(
                 Resource.Loading(),
                 Resource.Error("HTTP 500 Response.error()")
             ),
-            receivedUiStates)
+            receivedUiStates
         )
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -112,13 +115,14 @@ class MainViewModelTest {
 
         advanceUntilIdle()
 
-        assert(compareResourceLists(
+        assertResourceListsEquals(
             listOf(
                 Resource.Loading(),
                 Resource.Error("Couldn't reach server. Check your internet connection.")
             ),
-            receivedUiStates)
+            receivedUiStates
         )
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -137,13 +141,14 @@ class MainViewModelTest {
 
         advanceUntilIdle()
 
-        assert(compareResourceLists(
+        assertResourceListsEquals(
             listOf(
                 Resource.Loading(),
                 Resource.Error("Error fetching location")
             ),
-            receivedUiStates)
+            receivedUiStates
         )
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -162,12 +167,12 @@ class MainViewModelTest {
 
         advanceUntilIdle()
 
-        assert(compareResourceLists(
+        assertResourceListsEquals(
             listOf(
                 Resource.Loading(),
                 Resource.Error("Location not found")
             ),
-            receivedUiStates)
+            receivedUiStates
         )
     }
 }
