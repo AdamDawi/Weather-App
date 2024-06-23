@@ -94,7 +94,8 @@ fun WeatherContent(
                 state = listState,
                 flingBehavior = snapBehavior,
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 contentPadding = PaddingValues(horizontal = 70.dp),
                 horizontalArrangement = Arrangement.spacedBy(50.dp)
             ) {
@@ -111,16 +112,9 @@ fun WeatherContent(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                TodayWeatherChartCard(
-                    weatherData = weatherData
-                )
-            }
-            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(start = 24.dp, top = 16.dp)
             ) {
                 Text(
                     text = "Current weather details",
@@ -128,6 +122,10 @@ fun WeatherContent(
                     fontSize = 18.sp
                 )
             }
+            CurrentTemperatureChartCard(
+                weatherData = weatherData
+            )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

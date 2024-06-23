@@ -17,11 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,25 +32,49 @@ import com.example.weatherapp.common.mockWeather
 import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.presentation.ui.theme.LightOrange
+import com.example.weatherapp.presentation.ui.theme.RedPink
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
-import java.util.Calendar
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
 @Composable
-fun TodayWeatherChartCard(
+fun CurrentTemperatureChartCard(
     modifier: Modifier = Modifier,
     weatherData: Weather,
-    currentHour: Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    currentDateTime: LocalDateTime = LocalDateTime.now()
 ) {
+    val onPrimaryContainerColor = MaterialTheme.colorScheme.onPrimaryContainer
     val fullDayTemperatureData = weatherData.hourly.temperature_2m
-    var filteredData = fullDayTemperatureData.take(currentHour + 1).map { it.toFloat() }
-    val startHour = if (currentHour >= 7) currentHour - 7 else 0
-    filteredData = filteredData.slice(startHour..currentHour)
+    val fullDayTimeData = weatherData.hourly.time
+
+    // Finding the hour indices that correspond to the last 7 hours
+    val filteredIndices = fullDayTimeData.indices.filter { index ->
+        val dateTime = LocalDateTime.parse(fullDayTimeData[index])
+        val hourDifference = ChronoUnit.HOURS.between(dateTime, currentDateTime)
+        hourDifference in 0..6
+    }.takeLast(7)
+
+    // Filtering temperature data based on found indexes
+    val filteredData = filteredIndices.map { index ->
+        fullDayTemperatureData[index].toFloat()
+    }
+
+    // Filtering time data based on found indexes
+    val filteredTime = filteredIndices.map { index ->
+        LocalDateTime.parse(fullDayTimeData[index]).hour
+    }
+
+    // we only take max temperature up to midnight
+    val maxValue = weatherData.daily.temperature_2m_max[2].toFloat()
+    // search min temperature in 24h
+    val minValue = fullDayTemperatureData.minOrNull()?.toFloat() ?: 0f
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(24.dp)
+            .shadow(2.dp, shape = RoundedCornerShape(40.dp))
             .height(200.dp)
             .clip(RoundedCornerShape(40.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
@@ -57,16 +83,11 @@ fun TodayWeatherChartCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.padding(end = 8.dp),
+            modifier = Modifier.padding(end = 16.dp),
             text = "${weatherData.current.temperature_2m.roundToInt()}${weatherData.hourly_units.temperature_2m}",
             fontSize = 50.sp,
             fontWeight = FontWeight.SemiBold
         )
-        // we only take max temperature up to midnight
-        val maxValue = weatherData.daily.temperature_2m_max[2].toFloat()
-        // search min temperature in 24h
-        val minValue = fullDayTemperatureData.minOrNull()?.toFloat() ?: 0f
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,13 +100,13 @@ fun TodayWeatherChartCard(
                 val canvasWidth = size.width
                 val canvasHeight = size.height
 
+                // Steps for drawing components
                 val horizontalStep = canvasWidth / (filteredData.size - 1)
                 val verticalStep = (canvasHeight - 40.dp.toPx()) / (maxValue - minValue)
 
-
                 // Hour markers on the X axis
                 filteredData.indices.forEach { index ->
-                    val actualHour = startHour + index
+                    val actualHour = filteredTime[index]
                     val x = index * horizontalStep
                     val hourLabel = "$actualHour:00"
 
@@ -94,7 +115,7 @@ fun TodayWeatherChartCard(
                         x,
                         canvasHeight,
                         android.graphics.Paint().apply {
-                            color = android.graphics.Color.BLACK
+                            color = onPrimaryContainerColor.toArgb()
                             textSize = 24f
                             textAlign = android.graphics.Paint.Align.CENTER
                         }
@@ -105,11 +126,11 @@ fun TodayWeatherChartCard(
                 listOf(maxValue).forEach { temp ->
                     val y = canvasHeight - 24.dp.toPx() - (temp - minValue) * verticalStep
                     drawContext.canvas.nativeCanvas.drawText(
-                        "${temp}°C",
+                        "${temp.roundToInt()}°C",
                         0f,
                         y-10f,
                         android.graphics.Paint().apply {
-                            color = android.graphics.Color.BLACK
+                            color = onPrimaryContainerColor.toArgb()
                             textSize = 24f
                             textAlign = android.graphics.Paint.Align.LEFT
                         }
@@ -119,7 +140,7 @@ fun TodayWeatherChartCard(
                 // Dashed line for maximum temperature
                 val maxTempY = canvasHeight - 24.dp.toPx() - (maxValue - minValue) * verticalStep
                 drawLine(
-                    color = Color.Red,
+                    color = RedPink,
                     start = Offset(0f, maxTempY),
                     end = Offset(canvasWidth, maxTempY),
                     strokeWidth = 2.dp.toPx(),
@@ -132,7 +153,7 @@ fun TodayWeatherChartCard(
                     canvasWidth - 100f,
                     maxTempY - 10f,
                     android.graphics.Paint().apply {
-                        color = android.graphics.Color.RED
+                        color = RedPink.toArgb()
                         textSize = 24f
                         textAlign = android.graphics.Paint.Align.RIGHT
                     }
@@ -177,13 +198,27 @@ fun TodayWeatherChartCard(
 @Preview(name = "Light Mode")
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun TodayWeatherChartCardPreview() {
+private fun TodayWeatherChartCardLateHoursPreview() {
     WeatherAppTheme {
         Surface {
-            TodayWeatherChartCard(
+            CurrentTemperatureChartCard(
                 weatherData = mockWeather
                     .toWeather(),
-                currentHour = 12
+                currentDateTime = LocalDateTime.parse("2024-06-23T21:30")
+            )
+        }
+    }
+}
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun TodayWeatherChartCardEarlyHoursPreview() {
+    WeatherAppTheme {
+        Surface {
+            CurrentTemperatureChartCard(
+                weatherData = mockWeather
+                    .toWeather(),
+                currentDateTime = LocalDateTime.parse("2024-06-23T03:00")
             )
         }
     }
