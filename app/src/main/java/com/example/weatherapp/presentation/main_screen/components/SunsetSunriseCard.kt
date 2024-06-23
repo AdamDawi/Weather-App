@@ -31,15 +31,19 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 
 @Composable
 fun SunsetSunriseCard(
     modifier: Modifier = Modifier,
-    sunrise: String,
-    sunset: String,
-    sunPathProgressPercent: Float
+    sunriseTime: String,
+    sunsetTime: String,
+    sunPathProgressPercent: Float,
+    sunRadius: Dp,
+    gradientStartColor: Color = Color.Yellow,
+    gradientEndColor: Color = Color.LightGray,
 ) {
     Column(
         modifier = modifier
@@ -49,6 +53,8 @@ fun SunsetSunriseCard(
             .clip(RoundedCornerShape(40.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Canvas(
             modifier = Modifier
@@ -70,16 +76,8 @@ fun SunsetSunriseCard(
                     canvasHeight.times(0.96f)
                 )
             }
-
-            val path2 = Path().apply {
-                moveTo(canvasWidth.times(0f), canvasHeight.times(0.96f))
-                lineTo(canvasWidth.times(1f), canvasHeight.times(0.96f))
-            }
-
             // Draw the path with gradient stroke
             drawIntoCanvas { canvas ->
-                val gradientStartColor = Color.Yellow
-                val gradientEndColor = Color.LightGray
                 // Calculate gradient points
                 val gradientStart = getPositionOnPath(path, clampedPercent-0.01f) // Slightly before sun
                 val gradientEnd = getPositionOnPath(path, clampedPercent)
@@ -100,29 +98,35 @@ fun SunsetSunriseCard(
                 canvas.nativeCanvas.drawPath(path.asAndroidPath(), paint)
             }
 
+            // draw base path
+            val basePath = Path().apply {
+                moveTo(canvasWidth.times(0f), canvasHeight.times(0.96f))
+                lineTo(canvasWidth.times(1f), canvasHeight.times(0.96f))
+            }
             drawPath(
-                path = path2,
+                path = basePath,
                 style = Stroke(width = 1.dp.toPx(), cap = StrokeCap.Round),
                 color = Color.LightGray.copy(alpha = 0.7f)
             )
 
-            // draw sun
-            val sunRadius = 8.dp.toPx()
-            val position = getPositionOnPath(path, clampedPercent)
+            // draw sun only when sun is before sunset
+            if(clampedPercent < 100f){
+                val sunPosition = getPositionOnPath(path, clampedPercent)
 
-            // sun shadow
-            drawCircle(
-                color = Color.Yellow.copy(alpha = 0.5f),
-                radius = sunRadius+3.dp.toPx(),
-                center = Offset(position[0], position[1]),
-            )
+                // sun shadow
+                drawCircle(
+                    color = gradientStartColor.copy(alpha = 0.5f),
+                    radius = sunRadius.toPx()+(sunRadius*0.4f).toPx(),
+                    center = Offset(sunPosition[0], sunPosition[1]),
+                )
 
-            // sun
-            drawCircle(
-                color = Color.Yellow,
-                radius = sunRadius,
-                center = Offset(position[0], position[1]),
-            )
+                // sun
+                drawCircle(
+                    color = gradientStartColor,
+                    radius = sunRadius.toPx(),
+                    center = Offset(sunPosition[0], sunPosition[1]),
+                )
+            }
         }
         Row(
             modifier = Modifier
@@ -137,7 +141,7 @@ fun SunsetSunriseCard(
                     text = "Sunrise"
                 )
                 Text(
-                    text = sunrise,
+                    text = sunriseTime,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -149,7 +153,7 @@ fun SunsetSunriseCard(
                     text = "Sunset"
                 )
                 Text(
-                    text = sunset,
+                    text = sunsetTime,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -171,28 +175,29 @@ private fun getPositionOnPath(path: Path, percent: Float): FloatArray {
 @Preview(name = "Light Mode")
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun SunsetSunriseCardHighPercentPreview() {
-    WeatherAppTheme {
-        Surface {
-            SunsetSunriseCard(
-                sunrise = "04:13",
-                sunset = "20:48",
-                sunPathProgressPercent = 100f
-            )
-        }
-    }
-}
-
-@Preview(name = "Light Mode")
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
 private fun SunsetSunriseCardLowPercentPreview() {
     WeatherAppTheme {
         Surface {
             SunsetSunriseCard(
-                sunrise = "04:13",
-                sunset = "20:48",
-                sunPathProgressPercent = 20f
+                sunriseTime = "04:13",
+                sunsetTime = "20:48",
+                sunPathProgressPercent = 20f,
+                sunRadius = 8.dp
+            )
+        }
+    }
+}
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SunsetSunriseCardHighPercentPreview() {
+    WeatherAppTheme {
+        Surface {
+            SunsetSunriseCard(
+                sunriseTime = "04:13",
+                sunsetTime = "20:48",
+                sunPathProgressPercent = 100f,
+                sunRadius = 8.dp
             )
         }
     }

@@ -28,7 +28,7 @@ import com.example.weatherapp.R
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 
 @Composable
-fun CurrentWeatherDetailsCard(
+fun WeatherDetailsCard(
     modifier: Modifier = Modifier,
     title: String,
     value: String,
@@ -77,7 +77,7 @@ fun CurrentWeatherDetailsCard(
 private fun CardForDetailRainPreview() {
     WeatherAppTheme {
         Surface {
-            CurrentWeatherDetailsCard(
+            WeatherDetailsCard(
                 title = "Rain",
                 value = "2.0",
                 unit = "mm",
@@ -92,7 +92,7 @@ private fun CardForDetailRainPreview() {
 private fun CardForDetailHumidityPreview() {
     WeatherAppTheme {
         Surface {
-            CurrentWeatherDetailsCard(
+            WeatherDetailsCard(
                 title = "Rain",
                 value = "46.0",
                 unit = "%",

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 
@@ -32,5 +33,58 @@ fun WeatherIconBasedOnCode(
         }),
         contentDescription = "Weather",
         tint = Color.Unspecified
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherIconBasedOnCodeRainyDayPreview() {
+    WeatherIconBasedOnCode(
+        weatherCode = 65,
+        isDay = true
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherIconBasedOnCodeRainyNightPreview() {
+    WeatherIconBasedOnCode(
+        weatherCode = 65,
+        isDay = false
+    )
+}
+@Preview
+@Composable
+private fun WeatherIconBasedOnCodeThunderStormDayPreview() {
+    WeatherIconBasedOnCode(
+        weatherCode = 99,
+        isDay = true
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherIconBasedOnCodeThunderStormNightPreview() {
+    WeatherIconBasedOnCode(
+        weatherCode = 99,
+        isDay = false
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherIconBasedOnCodeClearSkyDayPreview() {
+    WeatherIconBasedOnCode(
+        weatherCode = 0,
+        isDay = true
+    )
+}
+
+@Preview
+@Composable
+private fun WeatherIconBasedOnCodeClearSkyNightPreview() {
+    WeatherIconBasedOnCode(
+        weatherCode = 0,
+        isDay = false
     )
 }

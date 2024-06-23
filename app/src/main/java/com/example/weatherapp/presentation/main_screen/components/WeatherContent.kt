@@ -33,6 +33,7 @@ import com.example.weatherapp.common.mockWeather
 import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.presentation.ui.theme.DarkerWhite
+import com.example.weatherapp.presentation.ui.theme.LightOrange
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -101,10 +102,20 @@ fun WeatherContent(
                     weatherData.daily.time
                 ){index, _ ->
                     DailyWeatherCard(
-                        weatherData = weatherData,
-                        index = index
+                        weatherCode = weatherData.daily.weather_code[index],
+                        maxTemperature = weatherData.daily.temperature_2m_max[index],
+                        isDay = if(index == 2) weatherData.current.is_day == 1 else true,
+                        time = weatherData.daily.time[index],
+                        temperatureUnit = weatherData.daily_units.temperature_2m_max
                     )
                 }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TodayWeatherChartCard(
+                    weatherData = weatherData
+                )
             }
             Row(
                 modifier = Modifier
@@ -112,11 +123,10 @@ fun WeatherContent(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Today's weather details",
+                    text = "Current weather details",
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp
                 )
-
             }
             Row(
                 modifier = Modifier
@@ -124,13 +134,13 @@ fun WeatherContent(
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                CurrentWeatherDetailsCard(
+                WeatherDetailsCard(
                     title = "Rain",
                     value = weatherData.current.rain.toString(),
                     unit = weatherData.current_units.rain,
                     icon = painterResource(id = R.drawable.ic_rain)
                 )
-                CurrentWeatherDetailsCard(
+                WeatherDetailsCard(
                     title = "Wind speed",
                     value = weatherData.current.wind_speed_10m.toString(),
                     unit = weatherData.current_units.wind_speed_10m,
@@ -143,7 +153,7 @@ fun WeatherContent(
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                CurrentWeatherDetailsCard(
+                WeatherDetailsCard(
                     title = "Humidity",
                     value = weatherData.current.relative_humidity_2m.toString(),
                     unit = weatherData.current_units.relative_humidity_2m,
@@ -154,7 +164,7 @@ fun WeatherContent(
                         else R.drawable.ic_humidity_high
                     )
                 )
-                CurrentWeatherDetailsCard(
+                WeatherDetailsCard(
                     title = "Cloud cover",
                     value = weatherData.current.cloud_cover.toString(),
                     unit = weatherData.current_units.cloud_cover,
@@ -172,13 +182,15 @@ fun WeatherContent(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 SunsetSunriseCard(
-                    sunrise = provideFormattedSunDate(weatherData.daily.sunrise[2]),
-                    sunset = provideFormattedSunDate(weatherData.daily.sunset[2]),
+                    sunriseTime = provideFormattedSunDate(weatherData.daily.sunrise[2]),
+                    sunsetTime = provideFormattedSunDate(weatherData.daily.sunset[2]),
                     sunPathProgressPercent = calculateSunPathProgressPercent(
                         LocalDateTime.parse(weatherData.daily.sunrise[2]),
                         LocalDateTime.parse(weatherData.daily.sunset[2]),
-                        LocalDateTime.now()
-                        )
+                        LocalDateTime.now(),
+                        ),
+                    sunRadius = 8.dp,
+                    gradientStartColor = LightOrange
                 )
             }
         }
@@ -192,9 +204,11 @@ private fun provideFormattedSunDate(time: String): String{
 }
 
 private fun calculateSunPathProgressPercent(sunriseTime: LocalDateTime, sunsetTime: LocalDateTime, currentTime: LocalDateTime): Float {
+    // 100% progress in minutes
     val totalDayMinutes = sunriseTime.until(sunsetTime, ChronoUnit.MINUTES)
+    // current progress in minutes
     val elapsedMinutes = sunriseTime.until(currentTime, ChronoUnit.MINUTES)
-
+    //  returning percentage of current progress
     return ((elapsedMinutes.toFloat() / totalDayMinutes.toFloat()) * 100).coerceAtMost(100f)
 }
 

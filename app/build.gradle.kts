@@ -51,8 +51,8 @@ android {
     }
 }
 
-dependencies {
 
+dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -93,7 +93,6 @@ dependencies {
 
     //permissions
     implementation("com.google.accompanist:accompanist-permissions:0.24.13-rc")
-
 
     // Local unit tests
     testImplementation("androidx.test:core:1.4.0")
