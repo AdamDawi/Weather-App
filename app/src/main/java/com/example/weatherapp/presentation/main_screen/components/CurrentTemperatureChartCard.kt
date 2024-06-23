@@ -29,8 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.common.mockWeather
-import com.example.weatherapp.data.remote.dto.toWeather
-import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.presentation.ui.theme.LightOrange
 import com.example.weatherapp.presentation.ui.theme.RedPink
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
@@ -41,33 +39,27 @@ import kotlin.math.roundToInt
 @Composable
 fun CurrentTemperatureChartCard(
     modifier: Modifier = Modifier,
-    weatherData: Weather,
+    currentTemperature: Double,
+    currentTemperatureUnit: String,
+    maxTemperatureToday: Double,
+    fullDayTemperatureData: List<Double>,
+    fullDayTimeData: List<String>,
     currentDateTime: LocalDateTime = LocalDateTime.now()
 ) {
     val onPrimaryContainerColor = MaterialTheme.colorScheme.onPrimaryContainer
-    val fullDayTemperatureData = weatherData.hourly.temperature_2m
-    val fullDayTimeData = weatherData.hourly.time
 
     // Finding the hour indices that correspond to the last 7 hours
-    val filteredIndices = fullDayTimeData.indices.filter { index ->
-        val dateTime = LocalDateTime.parse(fullDayTimeData[index])
-        val hourDifference = ChronoUnit.HOURS.between(dateTime, currentDateTime)
-        hourDifference in 0..6
-    }.takeLast(7)
+    val lastSevenHoursIndices = getLastSevenHoursIndices(fullDayTimeData, currentDateTime)
 
     // Filtering temperature data based on found indexes
-    val filteredData = filteredIndices.map { index ->
-        fullDayTemperatureData[index].toFloat()
-    }
+    val filteredData = filterTemperatureData(fullDayTemperatureData, lastSevenHoursIndices)
 
     // Filtering time data based on found indexes
-    val filteredTime = filteredIndices.map { index ->
-        LocalDateTime.parse(fullDayTimeData[index]).hour
-    }
+    val filteredTime = filterTimeData(fullDayTimeData, lastSevenHoursIndices)
 
-    // we only take max temperature up to midnight
-    val maxValue = weatherData.daily.temperature_2m_max[2].toFloat()
-    // search min temperature in 24h
+    // Only take max temperature up to midnight
+    val maxValue = maxTemperatureToday.toFloat()
+    // Search min temperature in 24h
     val minValue = fullDayTemperatureData.minOrNull()?.toFloat() ?: 0f
 
     Row(
@@ -84,7 +76,7 @@ fun CurrentTemperatureChartCard(
     ) {
         Text(
             modifier = Modifier.padding(end = 16.dp),
-            text = "${weatherData.current.temperature_2m.roundToInt()}${weatherData.hourly_units.temperature_2m}",
+            text = "${currentTemperature.roundToInt()}${currentTemperatureUnit}",
             fontSize = 50.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -194,6 +186,36 @@ fun CurrentTemperatureChartCard(
     }
 }
 
+private fun getLastSevenHoursIndices(
+fullDayTimeData: List<String>,
+currentDateTime: LocalDateTime
+): List<Int> {
+    return fullDayTimeData.indices.reversed().filter { index ->
+        val dateTime = LocalDateTime.parse(fullDayTimeData[index])
+        ChronoUnit.HOURS.between(dateTime, currentDateTime) in 0..6
+    }.take(7).reversed()
+}
+
+// Function to filter temperature data based on indices
+private fun filterTemperatureData(
+    fullDayTemperatureData: List<Double>,
+    indices: List<Int>
+): List<Float> {
+    return indices.map { index ->
+        fullDayTemperatureData[index].toFloat()
+    }
+}
+
+// Function to filter time data based on indices
+private fun filterTimeData(
+    fullDayTimeData: List<String>,
+    indices: List<Int>
+): List<Int> {
+    return indices.map { index ->
+        LocalDateTime.parse(fullDayTimeData[index]).hour
+    }
+}
+
 
 @Preview(name = "Light Mode")
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -202,8 +224,11 @@ private fun TodayWeatherChartCardLateHoursPreview() {
     WeatherAppTheme {
         Surface {
             CurrentTemperatureChartCard(
-                weatherData = mockWeather
-                    .toWeather(),
+                currentTemperature = mockWeather.current.temperature_2m,
+                currentTemperatureUnit = mockWeather.current_units.temperature_2m,
+                maxTemperatureToday = mockWeather.daily.temperature_2m_max[2],
+                fullDayTemperatureData = mockWeather.hourly.temperature_2m,
+                fullDayTimeData = mockWeather.hourly.time,
                 currentDateTime = LocalDateTime.parse("2024-06-23T21:30")
             )
         }
@@ -216,9 +241,12 @@ private fun TodayWeatherChartCardEarlyHoursPreview() {
     WeatherAppTheme {
         Surface {
             CurrentTemperatureChartCard(
-                weatherData = mockWeather
-                    .toWeather(),
-                currentDateTime = LocalDateTime.parse("2024-06-23T03:00")
+                currentTemperature = mockWeather.current.temperature_2m,
+                currentTemperatureUnit = mockWeather.current_units.temperature_2m,
+                maxTemperatureToday = mockWeather.daily.temperature_2m_max[2],
+                fullDayTemperatureData = mockWeather.hourly.temperature_2m,
+                fullDayTimeData = mockWeather.hourly.time,
+                currentDateTime = LocalDateTime.parse("2024-06-23T03:01")
             )
         }
     }

@@ -17,10 +17,8 @@ open class GetWeatherUseCase
 ){
     open operator fun invoke(longitude: Double, latitude: Double): Flow<Resource<Weather>> = flow {
             Timber.d("Fetching current weather")
-            Timber.d("$longitude, $latitude")
             try {
                 val result = repository.getWeather(longitude = longitude.toString(), latitude = latitude.toString())
-                Timber.d("$result")
                 emit(Resource.Success(result.toWeather()))
             }catch (e: IOException){
                 emit(Resource.Error("Couldn't reach server. Check your internet connection."))
