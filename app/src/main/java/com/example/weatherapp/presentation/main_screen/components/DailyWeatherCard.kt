@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.common.mockWeather
-import com.example.weatherapp.common.provideFormattedTime
+import com.example.weatherapp.common.provideFormattedTimeToDayOfWeekDate
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 import kotlin.math.roundToInt
 
@@ -97,7 +97,7 @@ private fun DailyWeatherCardRainPreview() {
                 weatherCode = mockWeather.daily.weather_code[1],
                 maxTemperature = mockWeather.daily.temperature_2m_max[1],
                 isDay = true,
-                formattedTime = provideFormattedTime(mockWeather.daily.time[1]),
+                formattedTime = provideFormattedTimeToDayOfWeekDate(mockWeather.daily.time[1]),
                 temperatureUnit = mockWeather.daily_units.temperature_2m_max,
                 minTemperature = mockWeather.daily.temperature_2m_min[1]
             )
@@ -115,7 +115,7 @@ private fun DailyWeatherCardPreview() {
                 weatherCode = 99,
                 maxTemperature = mockWeather.daily.temperature_2m_max[1],
                 isDay = false,
-                formattedTime = provideFormattedTime(mockWeather.daily.time[2]),
+                formattedTime = provideFormattedTimeToDayOfWeekDate(mockWeather.daily.time[2]),
                 temperatureUnit = mockWeather.daily_units.temperature_2m_max,
                 minTemperature = mockWeather.daily.temperature_2m_min[1]
             )

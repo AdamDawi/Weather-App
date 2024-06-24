@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
 import com.example.weatherapp.common.mockCurrentLocalDateTime
 import com.example.weatherapp.common.mockWeather
-import com.example.weatherapp.common.provideFormattedTime
+import com.example.weatherapp.common.provideFormattedTimeToDayOfWeekDate
 import com.example.weatherapp.common.provideFormattedTimeToHourMinuteSecond
 import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.model.Weather
@@ -134,7 +134,7 @@ private fun DailyWeatherForecast(
                 weatherCode = weatherData.daily.weather_code[index],
                 maxTemperature = weatherData.daily.temperature_2m_max[index],
                 isDay = if (index == 2) weatherData.current.is_day == 1 else true,
-                formattedTime = provideFormattedTime(weatherData.daily.time[index]),
+                formattedTime = provideFormattedTimeToDayOfWeekDate(weatherData.daily.time[index]),
                 temperatureUnit = weatherData.daily_units.temperature_2m_max,
                 minTemperature = weatherData.daily.temperature_2m_min[index]
             )

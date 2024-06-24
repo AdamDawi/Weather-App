@@ -18,7 +18,7 @@ import java.util.Locale
  *
  * @throws DateTimeParseException if the input date string cannot be parsed.
  */
-fun provideFormattedTime(time: String): String {
+fun provideFormattedTimeToDayOfWeekDate(time: String): String {
     return try {
         val localDateTime = LocalDateTime.parse(time+"T00:00")
 
@@ -32,7 +32,7 @@ fun provideFormattedTime(time: String): String {
 
         "$dayOfWeek, $dayOfMonth $month"
     } catch (e: DateTimeParseException) {
-        throw IllegalArgumentException("Invalid date format. Expected format is YYYY-MM-DD.", e)
+        throw IllegalArgumentException("Invalid time format: $time. Expected format is YYYY-MM-DD.", e)
     }
 }
 
