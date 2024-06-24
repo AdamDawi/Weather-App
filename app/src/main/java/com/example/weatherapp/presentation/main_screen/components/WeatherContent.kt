@@ -124,7 +124,8 @@ private fun DailyWeatherForecast(
                 maxTemperature = weatherData.daily.temperature_2m_max[index],
                 isDay = if (index == 2) weatherData.current.is_day == 1 else true,
                 time = weatherData.daily.time[index],
-                temperatureUnit = weatherData.daily_units.temperature_2m_max
+                temperatureUnit = weatherData.daily_units.temperature_2m_max,
+                minTemperature = weatherData.daily.temperature_2m_min[index]
             )
         }
     }

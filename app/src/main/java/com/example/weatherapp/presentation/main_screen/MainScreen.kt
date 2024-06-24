@@ -54,7 +54,7 @@ fun MainScreen(
     LaunchedEffect(Unit){
         locationPermissions.launchMultiplePermissionRequest()
     }
-
+    //get location address from latitude and longitude
     LaunchedEffect(state) {
         if (state is Resource.Success) {
             val latitude = state.data!!.latitude

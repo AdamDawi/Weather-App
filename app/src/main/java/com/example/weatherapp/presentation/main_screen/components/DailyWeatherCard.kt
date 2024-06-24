@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +31,7 @@ import kotlin.math.roundToInt
 fun DailyWeatherCard(
     modifier: Modifier = Modifier,
     maxTemperature: Double,
+    minTemperature: Double,
     temperatureUnit: String,
     isDay: Boolean,
     time: String,
@@ -51,7 +53,7 @@ fun DailyWeatherCard(
                         ),
                     )
                 )
-                .padding(16.dp)
+                .padding(20.dp)
                 .padding(top = 8.dp),
             contentAlignment = Alignment.TopCenter
         ) {
@@ -62,10 +64,12 @@ fun DailyWeatherCard(
             Text(
                 modifier = Modifier
                     .padding(top = 170.dp),
-                text = "${maxTemperature.roundToInt()}${temperatureUnit}",
-                fontSize = 58.sp,
+                text = "${maxTemperature.roundToInt()}${temperatureUnit[0]} " +
+                        "${minTemperature.roundToInt()}${temperatureUnit[0]}",
+                fontSize = 50.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                textAlign = TextAlign.Center
             )
         }
         Box(
@@ -99,7 +103,7 @@ private fun provideFormattedTime(time: String): String {
 @Preview(name = "Light Mode")
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun DailyWeatherCardPreview() {
+private fun DailyWeatherCardRainPreview() {
     WeatherAppTheme {
         Surface {
             DailyWeatherCard(
@@ -107,7 +111,26 @@ private fun DailyWeatherCardPreview() {
                 maxTemperature = mockWeather.daily.temperature_2m_max[1],
                 isDay = true,
                 time = mockWeather.daily.time[1],
-                temperatureUnit = mockWeather.daily_units.temperature_2m_max
+                temperatureUnit = mockWeather.daily_units.temperature_2m_max,
+                minTemperature = mockWeather.daily.temperature_2m_min[1]
+            )
+        }
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun DailyWeatherCardPreview() {
+    WeatherAppTheme {
+        Surface {
+            DailyWeatherCard(
+                weatherCode = 99,
+                maxTemperature = mockWeather.daily.temperature_2m_max[1],
+                isDay = false,
+                time = mockWeather.daily.time[2],
+                temperatureUnit = mockWeather.daily_units.temperature_2m_max,
+                minTemperature = mockWeather.daily.temperature_2m_min[1]
             )
         }
     }
