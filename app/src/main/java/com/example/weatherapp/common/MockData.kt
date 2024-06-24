@@ -105,5 +105,5 @@ val mockWeather = WeatherDto(
     hourly_units = mockHourlyUnits
 )
 
-const val mockCurrentDate: String = "17:50:33"
+const val mockCurrentLocalDateTime: String = "2024-06-23T03:01"
 

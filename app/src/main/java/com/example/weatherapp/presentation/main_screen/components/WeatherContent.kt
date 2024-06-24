@@ -6,7 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,8 +30,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
-import com.example.weatherapp.common.mockCurrentDate
+import com.example.weatherapp.common.mockCurrentLocalDateTime
 import com.example.weatherapp.common.mockWeather
+import com.example.weatherapp.common.provideFormattedTime
+import com.example.weatherapp.common.provideFormattedTimeToHourMinuteSecond
 import com.example.weatherapp.data.remote.dto.toWeather
 import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.presentation.ui.theme.DarkerWhite
@@ -39,11 +46,11 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun WeatherContent(
     modifier: Modifier = Modifier,
-    currentDate: String,
+    currentLocalDateTime: String,
     weatherData: Weather,
     location: String,
     onThemeUpdate: () -> Unit,
-    darkTheme: Boolean
+    isDarkTheme: Boolean
 ) {
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = 2)
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = listState)
@@ -53,12 +60,16 @@ fun WeatherContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         stickyHeader {
-            WeatherHeader(currentDate, darkTheme, onThemeUpdate)
+            WeatherHeader(
+                provideFormattedTimeToHourMinuteSecond(currentLocalDateTime),
+                isDarkTheme,
+                onThemeUpdate
+            )
         }
         item {
             WeatherLocation(location)
             DailyWeatherForecast(weatherData, listState, snapBehavior)
-            WeatherCurrentTemperatureChart(weatherData)
+            WeatherCurrentTemperatureChart(weatherData, LocalDateTime.parse(currentLocalDateTime))
             WeatherDetailCards(weatherData)
             SunPathCard(weatherData)
         }
@@ -123,7 +134,7 @@ private fun DailyWeatherForecast(
                 weatherCode = weatherData.daily.weather_code[index],
                 maxTemperature = weatherData.daily.temperature_2m_max[index],
                 isDay = if (index == 2) weatherData.current.is_day == 1 else true,
-                time = weatherData.daily.time[index],
+                formattedTime = provideFormattedTime(weatherData.daily.time[index]),
                 temperatureUnit = weatherData.daily_units.temperature_2m_max,
                 minTemperature = weatherData.daily.temperature_2m_min[index]
             )
@@ -132,7 +143,10 @@ private fun DailyWeatherForecast(
 }
 
 @Composable
-private fun WeatherCurrentTemperatureChart(weatherData: Weather) {
+private fun WeatherCurrentTemperatureChart(
+    weatherData: Weather,
+    currentLocalDateTime: LocalDateTime
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,7 +163,8 @@ private fun WeatherCurrentTemperatureChart(weatherData: Weather) {
         currentTemperatureUnit = weatherData.current_units.temperature_2m,
         maxTemperatureToday = weatherData.daily.temperature_2m_max[2],
         fullDayTemperatureData = weatherData.hourly.temperature_2m,
-        fullDayTimeData = weatherData.hourly.time
+        fullDayTimeData = weatherData.hourly.time,
+        currentLocalDateTime = currentLocalDateTime
     )
 }
 
@@ -242,7 +257,7 @@ private fun WeatherContentDefaultPreview() {
     WeatherAppTheme {
         Surface {
             WeatherContent(
-                currentDate = mockCurrentDate,
+                currentLocalDateTime = mockCurrentLocalDateTime,
                 weatherData = mockWeather.toWeather().copy(
                     current = mockWeather.toWeather().current.copy(
                         relative_humidity_2m = 15.0, cloud_cover = 20.0
@@ -250,7 +265,7 @@ private fun WeatherContentDefaultPreview() {
                 ),
                 location = "Polska, Lublin",
                 onThemeUpdate = {},
-                darkTheme = isSystemInDarkTheme()
+                isDarkTheme = isSystemInDarkTheme()
             )
         }
     }
@@ -263,7 +278,7 @@ private fun WeatherContentThunderstormPreview() {
     WeatherAppTheme {
         Surface {
             WeatherContent(
-                currentDate = mockCurrentDate,
+                currentLocalDateTime = mockCurrentLocalDateTime,
                 weatherData = mockWeather.toWeather().copy(
                     current = mockWeather.toWeather().current.copy(
                         weather_code = 95,
@@ -273,7 +288,7 @@ private fun WeatherContentThunderstormPreview() {
                 ),
                 location = "Polska, Lublin",
                 onThemeUpdate = {},
-                darkTheme = isSystemInDarkTheme()
+                isDarkTheme = isSystemInDarkTheme()
             )
         }
     }
@@ -285,7 +300,7 @@ private fun WeatherContentRainAndSnowPreview() {
     WeatherAppTheme {
         Surface {
             WeatherContent(
-                currentDate = mockCurrentDate,
+                currentLocalDateTime = mockCurrentLocalDateTime,
                 weatherData = mockWeather.toWeather().copy(
                     current = mockWeather.toWeather().current.copy(
                         weather_code = 66, relative_humidity_2m = 80.0
@@ -293,7 +308,7 @@ private fun WeatherContentRainAndSnowPreview() {
                 ),
                 location = "Polska, Lublin",
                 onThemeUpdate = {},
-                darkTheme = isSystemInDarkTheme()
+                isDarkTheme = isSystemInDarkTheme()
             )
         }
     }
@@ -305,7 +320,7 @@ private fun WeatherContentFrostPreview() {
     WeatherAppTheme {
         Surface {
             WeatherContent(
-                currentDate = mockCurrentDate,
+                currentLocalDateTime = mockCurrentLocalDateTime,
                 weatherData = mockWeather.toWeather().copy(
                     current = mockWeather.toWeather().current.copy(
                         weather_code = 51
@@ -313,7 +328,7 @@ private fun WeatherContentFrostPreview() {
                 ),
                 location = "Polska, Lublin",
                 onThemeUpdate = {},
-                darkTheme = isSystemInDarkTheme()
+                isDarkTheme = isSystemInDarkTheme()
             )
         }
     }

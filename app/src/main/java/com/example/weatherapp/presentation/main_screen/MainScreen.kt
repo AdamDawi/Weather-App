@@ -97,11 +97,11 @@ fun MainScreen(
                 }
                 is Resource.Success -> {
                     WeatherContent(
-                        currentDate = viewModel.currentDate,
+                        currentLocalDateTime = viewModel.currentLocalDateTime,
                         weatherData = state.data!!,
                         location =  address.value,
                         onThemeUpdate = {onThemeUpdate()},
-                        darkTheme = darkTheme
+                        isDarkTheme = darkTheme
                     )
                 }
             }

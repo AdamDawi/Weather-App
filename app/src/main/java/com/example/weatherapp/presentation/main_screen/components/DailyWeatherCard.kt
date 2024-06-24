@@ -22,9 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.common.mockWeather
+import com.example.weatherapp.common.provideFormattedTime
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
-import java.time.LocalDateTime
-import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
@@ -34,8 +33,8 @@ fun DailyWeatherCard(
     minTemperature: Double,
     temperatureUnit: String,
     isDay: Boolean,
-    time: String,
-    weatherCode: Int
+    weatherCode: Int,
+    formattedTime: String
 ) {
     Box(
         modifier = modifier
@@ -81,23 +80,11 @@ fun DailyWeatherCard(
         ){
             Text(
                 modifier = Modifier.padding(8.dp),
-                text = provideFormattedTime(time),
+                text = formattedTime,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }
-}
-
-// time format is "day of the week, day of the month month"
-private fun provideFormattedTime(time: String): String {
-    val localDateTime = LocalDateTime.parse(time+"T00:00")
-    val dayOfWeek = localDateTime.dayOfWeek.toString().lowercase()
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-    val dayOfMonth = localDateTime.dayOfMonth
-    val month = localDateTime.month.toString().lowercase()
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-
-    return "$dayOfWeek, $dayOfMonth $month"
 }
 
 @Preview(name = "Light Mode")
@@ -110,7 +97,7 @@ private fun DailyWeatherCardRainPreview() {
                 weatherCode = mockWeather.daily.weather_code[1],
                 maxTemperature = mockWeather.daily.temperature_2m_max[1],
                 isDay = true,
-                time = mockWeather.daily.time[1],
+                formattedTime = provideFormattedTime(mockWeather.daily.time[1]),
                 temperatureUnit = mockWeather.daily_units.temperature_2m_max,
                 minTemperature = mockWeather.daily.temperature_2m_min[1]
             )
@@ -128,7 +115,7 @@ private fun DailyWeatherCardPreview() {
                 weatherCode = 99,
                 maxTemperature = mockWeather.daily.temperature_2m_max[1],
                 isDay = false,
-                time = mockWeather.daily.time[2],
+                formattedTime = provideFormattedTime(mockWeather.daily.time[2]),
                 temperatureUnit = mockWeather.daily_units.temperature_2m_max,
                 minTemperature = mockWeather.daily.temperature_2m_min[1]
             )

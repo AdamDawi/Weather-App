@@ -21,8 +21,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 
@@ -35,7 +34,7 @@ class MainViewModel
 ) : ViewModel() {
 
     @OptIn(SavedStateHandleSaveableApi::class)
-    var currentDate by savedStateHandle.saveable {
+    var currentLocalDateTime by savedStateHandle.saveable {
         mutableStateOf("")
     }
         private set
@@ -46,8 +45,8 @@ class MainViewModel
 
             getUserLocationUseCase()
                 .onEach {
-                    currentDate = getCurrentDateWithFormat()
-                    savedStateHandle[SAVED_STATE_DATE] = currentDate
+                    currentLocalDateTime = getCurrentLocalDate()
+                    savedStateHandle[SAVED_STATE_DATE] = currentLocalDateTime
                 }.collect { locationResource ->
                     when (locationResource) {
                         is Resource.Success -> {
@@ -86,8 +85,9 @@ class MainViewModel
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun getCurrentDateWithFormat(): String {
-        return SimpleDateFormat("HH:mm:ss").format(Date())
+    fun getCurrentLocalDate(): String {
+        Timber.e(LocalDateTime.now().toString())
+        return LocalDateTime.now().toString()
     }
 }
 

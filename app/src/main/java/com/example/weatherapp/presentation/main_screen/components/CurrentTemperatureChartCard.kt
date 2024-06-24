@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.common.mockCurrentLocalDateTime
 import com.example.weatherapp.common.mockWeather
 import com.example.weatherapp.presentation.ui.theme.LightOrange
 import com.example.weatherapp.presentation.ui.theme.RedPink
@@ -44,12 +45,12 @@ fun CurrentTemperatureChartCard(
     maxTemperatureToday: Double,
     fullDayTemperatureData: List<Double>,
     fullDayTimeData: List<String>,
-    currentDateTime: LocalDateTime = LocalDateTime.now()
+    currentLocalDateTime: LocalDateTime
 ) {
     val onPrimaryContainerColor = MaterialTheme.colorScheme.onPrimaryContainer
 
     // Finding the hour indices that correspond to the last 7 hours
-    val lastSevenHoursIndices = getLastSevenHoursIndices(fullDayTimeData, currentDateTime)
+    val lastSevenHoursIndices = getLastSevenHoursIndices(fullDayTimeData, currentLocalDateTime)
 
     // Filtering temperature data based on found indexes
     val filteredData = filterTemperatureData(fullDayTemperatureData, lastSevenHoursIndices)
@@ -229,7 +230,7 @@ private fun TodayWeatherChartCardLateHoursPreview() {
                 maxTemperatureToday = mockWeather.daily.temperature_2m_max[2],
                 fullDayTemperatureData = mockWeather.hourly.temperature_2m,
                 fullDayTimeData = mockWeather.hourly.time,
-                currentDateTime = LocalDateTime.parse("2024-06-23T21:30")
+                currentLocalDateTime = LocalDateTime.parse(mockCurrentLocalDateTime)
             )
         }
     }
@@ -246,7 +247,7 @@ private fun TodayWeatherChartCardEarlyHoursPreview() {
                 maxTemperatureToday = mockWeather.daily.temperature_2m_max[2],
                 fullDayTemperatureData = mockWeather.hourly.temperature_2m,
                 fullDayTimeData = mockWeather.hourly.time,
-                currentDateTime = LocalDateTime.parse("2024-06-23T03:01")
+                currentLocalDateTime = LocalDateTime.parse(mockCurrentLocalDateTime)
             )
         }
     }
