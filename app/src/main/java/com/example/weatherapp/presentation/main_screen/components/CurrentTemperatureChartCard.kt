@@ -28,13 +28,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.common.getLastSevenHoursIndices
 import com.example.weatherapp.common.mockCurrentLocalDateTime
 import com.example.weatherapp.common.mockWeather
 import com.example.weatherapp.presentation.ui.theme.LightOrange
 import com.example.weatherapp.presentation.ui.theme.RedPink
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
 @Composable
@@ -185,16 +185,6 @@ fun CurrentTemperatureChartCard(
             }
         }
     }
-}
-
-private fun getLastSevenHoursIndices(
-fullDayTimeData: List<String>,
-currentDateTime: LocalDateTime
-): List<Int> {
-    return fullDayTimeData.indices.reversed().filter { index ->
-        val dateTime = LocalDateTime.parse(fullDayTimeData[index])
-        ChronoUnit.HOURS.between(dateTime, currentDateTime) in 0..6
-    }.take(7).reversed()
 }
 
 // Function to filter temperature data based on indices
