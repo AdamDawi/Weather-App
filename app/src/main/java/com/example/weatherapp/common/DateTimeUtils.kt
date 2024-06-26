@@ -109,8 +109,12 @@ fun getLastSevenHoursIndices(
     currentDateTime: LocalDateTime
 ): List<Int> {
     return fullDayTimeData.indices.reversed().filter { index ->
-        val dateTime = LocalDateTime.parse(fullDayTimeData[index])
-        ChronoUnit.HOURS.between(dateTime, currentDateTime) in 0..6
+        try {
+            val dateTime = LocalDateTime.parse(fullDayTimeData[index])
+            ChronoUnit.HOURS.between(dateTime, currentDateTime) in 0..6
+        } catch (e: DateTimeParseException) {
+            throw IllegalArgumentException("Invalid time format at index $index: ${fullDayTimeData[index]}. Please provide a valid time string.", e)
+        }
     }.take(7).reversed()
 }
 
