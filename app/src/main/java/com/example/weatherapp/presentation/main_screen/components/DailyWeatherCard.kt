@@ -2,7 +2,9 @@ package com.example.weatherapp.presentation.main_screen.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +42,7 @@ fun DailyWeatherCard(
         modifier = modifier
             .height(310.dp)
     ){
+        // Core card with gradient
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -53,27 +56,31 @@ fun DailyWeatherCard(
                     )
                 )
                 .padding(20.dp)
-                .padding(top = 8.dp),
+                .padding(top = 28.dp),
             contentAlignment = Alignment.TopCenter
         ) {
-            WeatherIconBasedOnCode(
-                weatherCode = weatherCode,
-                isDay = isDay
-            )
-            Text(
-                modifier = Modifier
-                    .padding(top = 170.dp),
-                text = "${maxTemperature.roundToInt()}${temperatureUnit[0]} " +
-                        "${minTemperature.roundToInt()}${temperatureUnit[0]}",
-                fontSize = 50.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                textAlign = TextAlign.Center
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                WeatherIconBasedOnCode(
+                    weatherCode = weatherCode,
+                    isDay = isDay
+                )
+                Text(
+                    text = "${maxTemperature.roundToInt()}${temperatureUnit[0]} / " +
+                            "${minTemperature.roundToInt()}${temperatureUnit[0]}",
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
+        // Time label
         Box(
             modifier = Modifier
-                .shadow(1.dp, CircleShape)
+                .shadow(2.dp, CircleShape)
                 .align(Alignment.TopCenter)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.tertiaryContainer)
@@ -81,7 +88,8 @@ fun DailyWeatherCard(
             Text(
                 modifier = Modifier.padding(8.dp),
                 text = formattedTime,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontSize = 16.sp
             )
         }
     }
