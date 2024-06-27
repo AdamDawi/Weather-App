@@ -3,6 +3,12 @@ package com.example.weatherapp.presentation.main_screen.components
 import android.content.res.Configuration
 import android.graphics.LinearGradient
 import android.graphics.PathMeasure
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +51,16 @@ fun SunsetSunriseCard(
     gradientStartColor: Color = Color.Yellow,
     gradientEndColor: Color = Color.LightGray,
 ) {
+    val infiniteTransition = rememberInfiniteTransition(label = "infinite transition for pulse")
+    val pulse = infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse"
+    )
     Column(
         modifier = modifier
             .shadow(2.dp, shape = RoundedCornerShape(40.dp))
@@ -116,7 +132,7 @@ fun SunsetSunriseCard(
                 // sun shadow
                 drawCircle(
                     color = gradientStartColor.copy(alpha = 0.5f),
-                    radius = sunRadius.toPx()+(sunRadius*0.4f).toPx(),
+                    radius = sunRadius.toPx()+(sunRadius*pulse.value).toPx(),
                     center = Offset(sunPosition[0], sunPosition[1]),
                 )
 
