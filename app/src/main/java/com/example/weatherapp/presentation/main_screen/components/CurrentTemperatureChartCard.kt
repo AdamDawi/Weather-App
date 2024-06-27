@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
@@ -169,7 +168,7 @@ fun CurrentTemperatureChartCard(
                 // Points on the chart
                 drawPath(
                     path = path,
-                    color = Color.Yellow.copy(alpha = 0.7f),
+                    color = LightOrange.copy(alpha = 0.7f),
                     style = Stroke(width = 2.dp.toPx())
                 )
                 filteredData.indices.forEach { index ->

@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,24 +56,30 @@ fun WeatherContent(
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = 2)
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        stickyHeader {
+    Scaffold(
+        topBar = {
             WeatherHeader(
                 provideFormattedTimeToHourMinuteSecond(currentLocalDateTime),
                 isDarkTheme,
                 onThemeUpdate
             )
         }
-        item {
-            WeatherLocation(location)
-            DailyWeatherForecast(weatherData, listState, snapBehavior)
-            WeatherCurrentTemperatureChart(weatherData, LocalDateTime.parse(currentLocalDateTime))
-            WeatherDetailCards(weatherData)
-            SunPathCard(weatherData)
+    ) {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                WeatherLocation(location)
+                DailyWeatherForecast(weatherData, listState, snapBehavior)
+                WeatherCurrentTemperatureChart(weatherData, LocalDateTime.parse(currentLocalDateTime))
+                WeatherDetailCards(weatherData)
+                SunPathCard(weatherData)
+            }
         }
+
     }
 }
 
