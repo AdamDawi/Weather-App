@@ -78,7 +78,8 @@ fun CurrentTemperatureChartCard(
             modifier = Modifier.padding(end = 16.dp),
             text = "${currentTemperature.roundToInt()}${currentTemperatureUnit}",
             fontSize = 50.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
         )
         Box(
             modifier = Modifier

@@ -26,6 +26,7 @@ fun WeatherDto.toWeather(): Weather {
         current_units = current_units,
         daily = daily,
         daily_units = daily_units,
+        // take only 7 hours before current day and all hours after current day
         hourly = hourly.copy(time = hourly.time.slice(41..71), temperature_2m = hourly.temperature_2m.slice(41..71)),
         hourly_units = hourly_units
     )
