@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.weatherapp.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -105,8 +105,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.1.0-alpha04")
 
     // Instrumentation tests
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.37")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.37")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
     androidTestImplementation("junit:junit:4.13.2")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1")
     androidTestImplementation("androidx.arch.core:core-testing:2.1.0")

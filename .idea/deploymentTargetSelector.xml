@@ -13,6 +13,20 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
+      <SelectionState runConfigName="FoodEndToEndTest">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-06-28T11:13:07.780386Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\adamd\.android\avd\Pixel_7_API_34_2.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="swipeCardToRight_deleteFromFavListAfterwards()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

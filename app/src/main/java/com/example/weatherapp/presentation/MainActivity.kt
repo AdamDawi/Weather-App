@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.surface) {
                     MainScreen(
                         onThemeUpdate = { darkTheme = !darkTheme},
-                        darkTheme = darkTheme
+                        isDarkTheme = darkTheme
                     )
                 }
             }

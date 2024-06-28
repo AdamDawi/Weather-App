@@ -36,7 +36,7 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = hiltViewModel(),
     onThemeUpdate: () -> Unit,
-    darkTheme: Boolean
+    isDarkTheme: Boolean
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -101,7 +101,7 @@ fun MainScreen(
                         weatherData = state.data!!,
                         location =  address.value,
                         onThemeUpdate = {onThemeUpdate()},
-                        isDarkTheme = darkTheme
+                        isDarkTheme = isDarkTheme
                     )
                 }
             }
