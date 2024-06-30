@@ -115,6 +115,7 @@ dependencies {
     androidTestImplementation("androidx.test:core-ktx:1.4.0")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
 }
 
 kapt {

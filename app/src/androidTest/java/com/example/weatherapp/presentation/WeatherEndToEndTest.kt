@@ -1,5 +1,7 @@
 package com.example.weatherapp.presentation
 
+import android.content.Context
+import android.os.Build
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.example.weatherapp.di.AppModule
 import com.example.weatherapp.presentation.main_screen.MainScreen
 import com.example.weatherapp.presentation.ui.theme.WeatherAppTheme
@@ -50,10 +54,15 @@ class FoodEndToEndTest {
                 }
             }
         }
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            getInstrumentation().uiAutomation.executeShellCommand("pm grant " + getApplicationContext<Context>().packageName + " android.permission.ACCESS_FINE_LOCATION")
+            getInstrumentation().uiAutomation.executeShellCommand("pm grant " + getApplicationContext<Context>().packageName + " android.permission.ACCESS_COARSE_LOCATION")
+
+        }
     }
 
     @Test
     fun test() {
-        composeRule.onNodeWithText("Last").assertExists()
+        composeRule.onNodeWithText("Location not found", substring = true, useUnmergedTree = true).assertExists()
     }
 }

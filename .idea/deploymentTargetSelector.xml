@@ -2,12 +2,12 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="App">
+      <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-25T16:33:12.422881700Z">
+        <DropdownSelection timestamp="2024-06-30T10:19:26.264982100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\adamd\.android\avd\Pixel_7_API_34_2.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\adamd\.android\avd\Pixel_7a_API_31.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,17 +15,25 @@
       </SelectionState>
       <SelectionState runConfigName="FoodEndToEndTest">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-28T11:13:07.780386Z">
+        <DropdownSelection timestamp="2024-06-30T16:38:00.442822600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\adamd\.android\avd\Pixel_7_API_34_2.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\adamd\.android\avd\Pixel_7a_API_31.avd" />
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="swipeCardToRight_deleteFromFavListAfterwards()">
+      <SelectionState runConfigName="test()">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-06-30T17:06:10.509912500Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\adamd\.android\avd\Pixel_7a_API_31.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
     </selectionStates>
   </component>
