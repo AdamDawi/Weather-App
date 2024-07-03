@@ -13,9 +13,6 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="shouldShowCorrectDisplayedDayOfWeek()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="shouldShowCorrectCurrentTemperature()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -26,6 +23,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="shouldShowCorrectLocationWhenLocationFetchIsSuccessful()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="clickOnThemeButtonShouldChangeTheme()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
