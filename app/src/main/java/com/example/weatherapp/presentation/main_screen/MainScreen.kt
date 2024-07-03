@@ -27,6 +27,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.util.Locale
 
 @SuppressLint("SuspiciousIndentation", "SimpleDateFormat")
@@ -57,6 +58,7 @@ fun MainScreen(
     //get location address from latitude and longitude
     LaunchedEffect(state) {
         if (state is Resource.Success) {
+
             val latitude = state.data!!.latitude
             val longitude = state.data!!.longitude
             withContext(Dispatchers.IO) {
@@ -82,6 +84,7 @@ fun MainScreen(
         ) {
             when(state) {
                 is Resource.Loading ->{
+                    Timber.e("MainScreen: ${state.data}")
                     CircularProgressIndicator(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
@@ -90,6 +93,7 @@ fun MainScreen(
                     )
                 }
                 is Resource.Error ->  {
+                    Timber.e("MainScreen: ${state.data}")
                     Text(
                         text = state.message!!,
                         textAlign = TextAlign.Center

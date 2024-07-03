@@ -1,16 +1,16 @@
 package com.example.weatherapp.di
 
 import android.content.Context
-import com.example.weatherapp.common.Constants.BASE_URL
-import com.example.weatherapp.data.remote.WeatherApi
-import com.example.weatherapp.data.repository.WeatherRepositoryImpl
-import com.example.weatherapp.domain.repository.WeatherRepository
-import com.example.weatherapp.domain.use_case.GetWeatherUseCase
-import com.example.weatherapp.data.location.DefaultLocationTracker
 import com.example.weatherapp.data.location.LocationTracker
+import com.example.weatherapp.data.remote.WeatherApi
+import com.example.weatherapp.data.remote.api.FakeLocationTrackerSuccess
+import com.example.weatherapp.data.remote.api.FakeSuccessApi
 import com.example.weatherapp.data.repository.LocationRepositoryImpl
+import com.example.weatherapp.data.repository.WeatherRepositoryImpl
 import com.example.weatherapp.domain.repository.LocationRepository
+import com.example.weatherapp.domain.repository.WeatherRepository
 import com.example.weatherapp.domain.use_case.GetUserLocationUseCase
+import com.example.weatherapp.domain.use_case.GetWeatherUseCase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.Module
@@ -18,8 +18,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -34,11 +32,7 @@ object TestAppModule {
     @Singleton
     @Provides
     fun provideWeatherApi(): WeatherApi{
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(WeatherApi::class.java)
+        return FakeSuccessApi()
     }
 
     @Provides
@@ -69,12 +63,7 @@ object TestAppModule {
     @Provides
     @Singleton
     fun providesLocationTracker(
-        fusedLocationProviderClient: FusedLocationProviderClient,
-        @ApplicationContext context: Context
-    ): LocationTracker = DefaultLocationTracker(
-        fusedLocationProviderClient = fusedLocationProviderClient,
-        application = context
-    )
+    ): LocationTracker = FakeLocationTrackerSuccess()
 
     @Provides
     @Singleton

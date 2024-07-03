@@ -68,11 +68,12 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(project(":app"))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //viewModel
-    implementation("android.arch.lifecycle:viewmodel:1.1.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
     //dagger hilt
     implementation("com.google.dagger:hilt-android:2.48")
@@ -95,28 +96,33 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.24.13-rc")
 
     // Local unit tests
-    testImplementation("androidx.test:core:1.4.0")
+    testImplementation("androidx.test:core:1.5.0")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1")
-    testImplementation("com.google.truth:truth:1.1.3")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")
-    testImplementation("io.mockk:mockk:1.10.5")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.1.0-alpha04")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
+    testImplementation("com.google.truth:truth:1.1.5")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+    testImplementation("io.mockk:mockk:1.9.3")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.1")
 
     // Instrumentation tests
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
     kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.5.1")
     androidTestImplementation("junit:junit:4.13.2")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1")
-    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
-    androidTestImplementation("com.google.truth:truth:1.1.3")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test:core-ktx:1.4.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("com.google.truth:truth:1.1.5")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:core-ktx:1.5.0")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestImplementation("androidx.test:rules:1.2.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+
+    // Mockito for instrumentation tests
+    androidTestImplementation("org.mockito:mockito-core:4.5.1")
+    androidTestImplementation("org.mockito:mockito-android:4.5.1")
 }
+
 
 kapt {
     correctErrorTypes = true

@@ -90,8 +90,8 @@ val mockHourlyUnits = HourlyUnits(
     wind_speed_10m = "km/h"
 )
 val mockWeather = WeatherDto(
-    latitude = 52.0,
-    longitude = 23.372,
+    latitude = 52.2296756,
+    longitude = 21.0122287,
     generationtime_ms = 0.0380277633666992,
     utc_offset_seconds = 7200,
     timezone = "Europe/Warsaw",
