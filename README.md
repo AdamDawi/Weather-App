@@ -54,6 +54,10 @@ git clone https://github.com/AdamDawi/Weather-App
 3. Be sure the versions in gradle are same as on github
 
 ## Here are some overview pictures:
+| Light mode  | Dark mode |
+| ------------- | ------------- |
+| ![33](https://github.com/AdamDawi/Weather-App/assets/49430055/33dc8694-c3c6-40ce-8682-fd85e6b51838)  | ![11](https://github.com/AdamDawi/Weather-App/assets/49430055/cdfe9f56-69b0-4952-9255-1c27ccc663fb)  |
+| ![44](https://github.com/AdamDawi/Weather-App/assets/49430055/de1c424b-319c-4582-baf6-886ff18d5508)  | ![22](https://github.com/AdamDawi/Weather-App/assets/49430055/da258e0e-5b3a-466d-a2d6-3a09a94979d8)  |
 
 
 ## Requirements
