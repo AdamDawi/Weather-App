@@ -22,9 +22,9 @@ fun WeatherIconBasedOnCode(
         painter = painterResource(id =
         when (weatherCode) {
             0 -> if(isDay) R.drawable.clear_sky else R.drawable.clear_night
-            1,2,3 -> if(isDay) R.drawable.cloudy_day else R.drawable.cloudy_night
+            1, 2, 3, 51, 53, 55 -> if(isDay) R.drawable.cloudy_day else R.drawable.cloudy_night
             45, 48 -> if(isDay) R.drawable.fog_day else R.drawable.fog_night
-            51, 53, 55, 56, 57 -> if(isDay) R.drawable.frost_day else R.drawable.frost_night
+            56, 57 -> if(isDay) R.drawable.frost_day else R.drawable.frost_night
             61, 63, 65, 80, 81, 82 -> if(isDay) R.drawable.rainy_day else R.drawable.rainy_night
             66, 67 -> R.drawable.rain_and_snow_mix
             71, 73, 75, 77, 85, 86 -> if(isDay) R.drawable.snowy_day else R.drawable.snowy_night
